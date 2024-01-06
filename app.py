@@ -33,11 +33,11 @@ def login():
     if request.method == "POST":
         # Ensure username was submitted
         if not request.form.get("username"):
-            return apology("must provide username", 403)
+            return error_message("must provide username", 403)
 
         # Ensure password was submitted
         elif not request.form.get("password"):
-            return apology("must provide password", 403)
+            return error_message("must provide password", 403)
 
         # Query database for username
         rows = db.execute(
@@ -48,7 +48,7 @@ def login():
         if len(rows) != 1 or not check_password_hash(
             rows[0]["hash"], request.form.get("password")
         ):
-            return apology("invalid username and/or password", 403)
+            return error_message("invalid username and/or password", 403)
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
@@ -71,21 +71,21 @@ def register():
 
         # Ensure username was submitted
         if not request.form.get("username"):
-            return apology("must provide username", 400)
+            return error_message("must provide username", 400)
 
         elif request.form.get("username") in user:
-            return apology("Username alredy taken", 400)
+            return error_message("Username alredy taken", 400)
 
         # Ensure password was submitted
         elif not request.form.get("password"):
-            return apology("must provide password", 400)
+            return error_message("must provide password", 400)
 
         # Ensure confirmation was submitted
         elif not request.form.get("confirmation"):
-            return apology("must provide confirmation", 400)
+            return error_message("must provide confirmation", 400)
 
         elif request.form.get("password") != request.form.get("confirmation"):
-            return apology("password confirmation incorrect", 400)
+            return error_message("password confirmation incorrect", 400)
 
         else:
             db.execute(
