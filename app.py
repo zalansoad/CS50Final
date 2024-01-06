@@ -17,6 +17,11 @@ Session(app)
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///pizza.db")
 
+@app.route("/")
+
+def index():
+    return render_template("index.html")
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """Log user in"""
