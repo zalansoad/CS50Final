@@ -1,1 +1,1 @@
-print('Hello git')
+from functools import wraps
