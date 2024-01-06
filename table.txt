@@ -22,3 +22,6 @@ type TEXT NOT NULL,
 price FLOAT NOT NULL,
 time TEXT NOT NULL,
 FOREIGN KEY (user_id) REFERENCES users(id));
+
+
+user>pizza>ingredients>order
