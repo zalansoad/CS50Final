@@ -6,6 +6,8 @@ from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 
+from helpers import error_message
+
 # Configure application
 app = Flask(__name__)
 
@@ -27,17 +29,26 @@ def login():
     """Log user in"""
 
     # Forget any user_id
-    session.clear()
+    if session.get("_flashes"):
+        flashes = session.get("_flashes")
+        session.clear()
+        session["_flashes"] = flashes
+    else:
+        session.clear()
+     
 
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
         # Ensure username was submitted
         if not request.form.get("username"):
-            return error_message("must provide username", 403)
-
+            flash("Please enter a username.")
+            return redirect("/login")
+            
         # Ensure password was submitted
         elif not request.form.get("password"):
-            return error_message("must provide password", 403)
+            flash("Please enter a password.")
+            return redirect("/login")
+            
 
         # Query database for username
         rows = db.execute(
@@ -48,12 +59,14 @@ def login():
         if len(rows) != 1 or not check_password_hash(
             rows[0]["hash"], request.form.get("password")
         ):
-            return error_message("invalid username and/or password", 403)
+            flash("Invalid username or password")
+            return redirect("/login")
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
 
         # Redirect user to home page
+        flash("Logged in.")
         return redirect("/")
 
     # User reached route via GET (as by clicking a link or via redirect)
@@ -71,28 +84,45 @@ def register():
 
         # Ensure username was submitted
         if not request.form.get("username"):
-            return error_message("must provide username", 400)
-
-        elif request.form.get("username") in user:
-            return error_message("Username alredy taken", 400)
+            flash("Please provide a username.")
+            return redirect("/register")
 
         # Ensure password was submitted
         elif not request.form.get("password"):
-            return error_message("must provide password", 400)
-
+            flash("Please enter a password.")
+            return redirect("/register")
+            
         # Ensure confirmation was submitted
         elif not request.form.get("confirmation"):
-            return error_message("must provide confirmation", 400)
-
+            flash("Please enter a password confirmation.")
+            return redirect("/register")
+        
+        elif request.form.get("username") in user:
+            flash("The username is alredy taken.")
+            return redirect("/register")
+            
         elif request.form.get("password") != request.form.get("confirmation"):
-            return error_message("password confirmation incorrect", 400)
-
+            flash("The password confirmation is incorrect")
+            return redirect("/register")
+            
         else:
             db.execute(
                 "INSERT INTO users (username, hash) VALUES(?, ?)",
                 request.form.get("username"),
                 generate_password_hash(request.form.get("password")),
             )
-            return redirect("/login")
-
+            flash("Registered.")
+            return redirect("/")
+    
     return render_template("register.html")
+
+@app.route("/logout")
+def logout():
+    """Log user out"""
+
+    # Forget any user_id
+    session.clear()
+
+    # Redirect user to login form
+    flash("Logged out.")
+    return redirect("/")
