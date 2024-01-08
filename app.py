@@ -135,4 +135,5 @@ def myorder():
 @app.route("/drinks")
 def drinks():
     """list drinks"""
-    return render_template("drinks.html")
+    drink = db.execute("SELECT * FROM drinks")
+    return render_template("drinks.html", drink=drink)

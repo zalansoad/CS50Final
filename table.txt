@@ -60,7 +60,20 @@ VALUES
 CREATE TABLE drinks (
 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 name TEXT NOT NULL,
-price FLOAT NOT NULL);
+price FLOAT NOT NULL,
+img TEXT NOT NULL);
+
+INSERT INTO drinks (name, price, img)
+VALUES 
+  ('Coca-Cola', 2.00, '/static/imgages/coca.jpg'),
+  ('Sprite', 2.00, '/static/imgages/sprite.jpg'),
+  ('Iced Tea', 1.75, '/static/imgages/tea.jpg'),
+  ('Kinley Pink Berry', 2.25, '/static/imgages/kinley.jpg'),
+  ('Fanta Orange', 2.00, '/static/imgages/fanta.jpg'),
+  ('Mineral Water', 1.50, '/static/imgages/mineral_water.jpg'),
+  ('RedBull', 2.25, '/static/imgages/redbull.jpg'),
+  ('Beer', 2.25, '/static/imgages/beer.jpg'),
+  
 
 
 
