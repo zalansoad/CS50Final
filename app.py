@@ -6,7 +6,7 @@ from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 
-from helpers import error_message
+from helpers import error_message, login_required
 
 # Configure application
 app = Flask(__name__)
@@ -20,7 +20,6 @@ Session(app)
 db = SQL("sqlite:///pizza.db")
 
 @app.route("/")
-
 def index():
     return render_template("index.html")
 
@@ -111,8 +110,8 @@ def register():
                 request.form.get("username"),
                 generate_password_hash(request.form.get("password")),
             )
-            flash("Registered.")
-            return redirect("/")
+            flash("Successfully registered. Please log in.")
+            return redirect("/login")
     
     return render_template("register.html")
 
@@ -126,3 +125,14 @@ def logout():
     # Redirect user to login form
     flash("Logged out.")
     return redirect("/")
+
+@app.route("/myorder")
+@login_required
+def myorder():
+    """show active orders"""
+    return render_template("myorder.html")
+
+@app.route("/drinks")
+def drinks():
+    """list drinks"""
+    return render_template("drinks.html")
