@@ -2,32 +2,65 @@ Tables:
 CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, username TEXT NOT NULL, hash TEXT NOT NULL);
 CREATE UNIQUE INDEX username ON users (username);
 
-CREATE TABLE admin (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, username TEXT NOT NULL, hash TEXT NOT NULL);
-CREATE UNIQUE INDEX username ON admin (username);
+CREATE TABLE admin (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, admin_name TEXT NOT NULL, hash TEXT NOT NULL);
+CREATE UNIQUE INDEX admin_name ON admin (admin_name);
 
+-------------ORDER TABLE ----------------
 
-CREATE TABLE order (
+CREATE TABLE myorder (
 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 user_id INTEGER NOT NULL,
 pizza TEXT NOT NULL,
 extra TEXT,
 price FLOAT NOT NULL,
 time TEXT NOT NULL,
-status TEXT NOT NULL,
+status TEXT NOT NULL DEFAULT 'Order received',
 FOREIGN KEY (user_id) REFERENCES users(id));
+
+-------------INGREDIENTS TABLE ----------------
 
 CREATE TABLE ingredients (
 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 name TEXT NOT NULL,
 price FLOAT NOT NULL);
 
-REATE TABLE pizzas (
+INSERT INTO ingredients (name, price)
+VALUES 
+  ('Olives', 1.50),
+  ('Onions', 1.25),
+  ('Bell Peppers', 1.75),
+  ('Spinach', 1.50),
+  ('Feta Cheese', 2.00),
+  ('Artichokes', 2.25),
+  ('Basil', 1.50),
+  ('Chicken', 2.50),
+  ('Cherry Tomatoes', 1.75),
+  ('Pine Nuts', 2.00);
+
+
+
+-------------PIZZA TABLE ----------------
+
+CREATE TABLE pizzas (
 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 name TEXT NOT NULL,
 ingredients TEXT NOT NULL,
 img TEXT NOT NULL,
 price FLOAT NOT NULL);
 
+INSERT INTO pizzas (name, ingredients, img, price)
+VALUES 
+  ('Bacon Pizza', 'Bacon, Mozzarella, Tomato Sauce, Red Onions', '/static/imgages/bacon.jpg', 14.99),
+  ('Mushroom Pizza', 'Mushrooms, Mozzarella, Tomato Sauce, Garlic', '/static/imgages/mushroom.jpg', 13.99),
+  ('Hawaiian Pizza', 'Ham, Pineapple, Mozzarella, Tomato Sauce', '/static/imgages/hawaii.jpg', 15.99),
+  ('Jalapeno Pizza', 'Jalapenos, Pepper Jack Cheese, Tomato Sauce, Red Peppers', '/static/imgages/jalapeno.jpg', 16.99),
+  ('Margherita Pizza', 'Fresh Basil, Mozzarella, Tomato Sauce, Olive Oil', '/static/imgages/margherita.jpg', 12.99),
+  ('Ham and Cheese Pizza', 'Ham, Mushrooms, Mozzarella, Tomato Sauce', '/static/imgages/ham.jpg', 14.99);
+
+CREATE TABLE drinks (
+id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+name TEXT NOT NULL,
+price FLOAT NOT NULL);
 
 
 
