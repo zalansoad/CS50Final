@@ -5,25 +5,16 @@
 {% endblock %}
 
 {% block main %}
-<table action="/drinks" method="get" class="table table-striped">
-    <thead>
-        <tr>
-            <th>name</th>
-            <th>price</th>
-            <th>img</th>
-            
-        </tr>
-    </thead>
-    <tbody>
-        {% for drink in drink %}
-            <tr>
-                <td>{{ drink.name }}</td>
-                <td>{{ drink.price }}</td>
-                <td><img src="{{ drink.img }}" max width="300"></td>
-            </tr>
-        {% endfor %}
-    </tbody>
 
+{% for drink in drink %}
+<div class="card" style="width: 18rem;">
+    <img class="card-img-top" src="{{ drink.img }}" alt="Card image cap">
+    <div class="card-body">
+      <h5 class="card-title">{{ drink.name }}</h5>
+      <p class="card-text">{{ drink.price }}</p>
+      <a href="#" class="btn btn-primary">Buy</a>
+    </div>
+  </div>
+{% endfor %}
 
-</table>
 {% endblock %}

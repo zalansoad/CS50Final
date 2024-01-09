@@ -21,7 +21,8 @@ db = SQL("sqlite:///pizza.db")
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    pizzas = db.execute("SELECT * FROM pizzas")
+    return render_template("index.html", pizzas=pizzas)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():

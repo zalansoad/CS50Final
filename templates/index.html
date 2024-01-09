@@ -5,5 +5,14 @@
 {% endblock %}
 
 {% block main %}
-    Hello Pizzaaa
+{% for pizza in pizzas %}
+<div class="card" style="width: 18rem;">
+    <img class="card-img-top" src="{{ pizza.img }}" alt="Card image cap">
+    <div class="card-body">
+      <h5 class="card-title">{{ pizza.name }}</h5>
+      <p class="card-text">{{ pizza.ingredients }}</p>
+      <a href="#" class="btn btn-primary">Buy</a>
+    </div>
+  </div>
+{% endfor %}
 {% endblock %}
