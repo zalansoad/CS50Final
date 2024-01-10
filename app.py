@@ -6,7 +6,7 @@ from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 
-from helpers import error_message, login_required
+from helpers import error_message, login_required, usd
 
 # Configure application
 app = Flask(__name__)
@@ -15,6 +15,9 @@ app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
+
+# Custom filter
+app.jinja_env.filters["usd"] = usd
 
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///pizza.db")

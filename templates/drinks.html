@@ -13,7 +13,7 @@
           <img class="card-img-top" src="{{ drink.img }}" alt="Card image cap">
           <div class="card-body">
             <h5 class="card-title">{{ drink.name }}</h5>
-            <p class="card-text">{{ drink.price }}</p>
+            <p class="card-text">{{ drink.price | usd }}</p>
             <a href="#" class="btn btn-primary">Buy</a>
           </div>
         </div>
