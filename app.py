@@ -141,3 +141,15 @@ def drinks():
     """list drinks"""
     drink = db.execute("SELECT * FROM drinks")
     return render_template("drinks.html", drink=drink)
+
+@app.route("/cart")
+def cart():
+    return render_template("cart.html")
+
+#Creating a dynamic route to handle pizzas
+@app.route("/<pizza_route>")
+def pizza(pizza_route):
+    PizzaDetails = db.execute("SELECT * FROM pizzas WHERE route = ?", pizza_route)
+    template_name = f"{pizza_route}.html"
+    return render_template(template_name, pizza_page=True, PizzaDetails=PizzaDetails)
+

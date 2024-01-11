@@ -57,6 +57,16 @@ VALUES
   ('Margherita Pizza', 'Fresh Basil, Mozzarella, Tomato Sauce, Olive Oil', '/static/imgages/margherita.jpg', 12.99),
   ('Ham and Cheese Pizza', 'Ham, Mushrooms, Mozzarella, Tomato Sauce', '/static/imgages/ham.jpg', 14.99);
 
+INSERT INTO pizzas (name, ingredients, img, price)
+VALUES 
+  ('Papito', 'Corn, Pepperoni, Mozzarella, Tomato Sauce, Red Onions, Bell Peppers, Olives', '/static/images/papito.jpg', 15.99),
+  ('Corn', 'Corn, Mozzarella, Tomato Sauce, Parmesan, Basil', '/static/images/corn.jpg', 14.99),
+  ('Nutella', 'Nutella, Banana', '/static/images/nutella.jpg', 12.99),
+  ('Four Cheese', 'Mozzarella, Parmesan, Ricotta, Gorgonzola, Tomato Sauce', '/static/images/4cheese.jpg', 15.99),
+  ('Pepperoni', 'Pepperoni, Mozzarella, Tomato Sauce, Oregano', '/static/images/pepperoni.jpg', 14.99),
+  ('Shongoku', 'Ham, Mushrooms, Mozzarella, Tomato Sauce, Red Onions, Olives, Garlic', '/static/images/shongoku.jpg', 16.99);
+
+
 CREATE TABLE drinks (
 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 name TEXT NOT NULL,
@@ -75,7 +85,7 @@ VALUES
   ('Beer', 2.25, '/static/imgages/beer.jpg'),
   
 
-
+git fetch origin
 
 
 
