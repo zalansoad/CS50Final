@@ -146,10 +146,17 @@ def drinks():
 def cart():
     return render_template("cart.html")
 
+pizzaroutes_data = db.execute("select route from pizzas")
+pizzaroutes = [row["route"] for row in pizzaroutes_data]
+
 #Creating a dynamic route to handle pizzas
 @app.route("/<pizza_route>")
 def pizza(pizza_route):
+    
     PizzaDetails = db.execute("SELECT * FROM pizzas WHERE route = ?", pizza_route)
-    template_name = f"{pizza_route}.html"
-    return render_template(template_name, pizza_page=True, PizzaDetails=PizzaDetails)
+    if pizza_route not in pizzaroutes:
+        return render_template("404.html")
+    else:
+        template_name = f"{pizza_route}.html"
+        return render_template(template_name, pizza_page=True, PizzaDetails=PizzaDetails)
 
