@@ -60,9 +60,37 @@
         <main class="container py-5 text-center">
             {% block main %}{% endblock %}
             {% if pizza_page %}
-            
+            <div class="container">
+                <div class="row">
+                  <!-- First Card -->
+                  <div class="col-12 col-sm-6 d-flex align-items-center">
+                    <div class="card mx-auto" style="width: 18rem;">
+                        <img class="card-img-top" src="{{ PizzaDetails[0].img }}" alt="Card image cap">
+                        <div class="card-body">
+                          <h3 class="card-title">{{ PizzaDetails[0].name }}</h3>
+                          <p class="card-text">{{ PizzaDetails[0].ingredients }}</p>
+                          <a href="/" class="btn btn-dark">Buy</a>
+                        </div>
+                    </div>
+                  </div>
+                  <!-- Second Card -->
+                  <div class="col-12 col-sm-6 d-flex align-items-center">
+                    <div class="card mx-auto" style="width: 18rem;">
+                        <img class="card-img-top" src="{{ PizzaDetails[0].img }}" alt="Card image cap">
+                        <div class="card-body">
+                          <h3 class="card-title">{{ PizzaDetails[0].name }}</h3>
+                          <p class="card-text">{{ PizzaDetails[0].ingredients }}</p>
+                          <a href="/" class="btn btn-dark">Buy</a>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
             
             {% endif %}
+            
+            
         </main>
 
         <footer class="mb-5 small text-center text-muted">
