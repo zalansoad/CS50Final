@@ -1,7 +1,7 @@
 import os
 
 from cs50 import SQL
-from flask import Flask, flash, redirect, render_template, request, session
+from flask import Flask, flash, redirect, render_template, request, session, abort
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
@@ -10,6 +10,7 @@ from helpers import error_message, login_required, usd
 
 # Configure application
 app = Flask(__name__)
+
 
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_PERMANENT"] = False
@@ -21,6 +22,10 @@ app.jinja_env.filters["usd"] = usd
 
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///pizza.db")
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html'), 404
 
 @app.route("/")
 def index():
@@ -146,16 +151,15 @@ def drinks():
 def cart():
     return render_template("cart.html")
 
-pizzaroutes_data = db.execute("select route from pizzas")
-pizzaroutes = [row["route"] for row in pizzaroutes_data]
-
 #Creating a dynamic route to handle pizzas
 @app.route("/<pizza_route>")
 def pizza(pizza_route):
+    pizzaroutes_data = db.execute("select route from pizzas")
+    pizzaroutes = [row["route"] for row in pizzaroutes_data]
     
     PizzaDetails = db.execute("SELECT * FROM pizzas WHERE route = ?", pizza_route)
     if pizza_route not in pizzaroutes:
-        return render_template("404.html")
+        abort(404)
     else:
         template_name = f"{pizza_route}.html"
         return render_template(template_name, pizza_page=True, PizzaDetails=PizzaDetails)
