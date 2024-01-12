@@ -8,8 +8,8 @@
 <div class="container">
   <div class="row">
     {% for pizza in pizzas %}
-    <div class="col-md-4 mb-4">
-      <div class="card" style="width: 18rem;">
+    <div class="col-md-4 mb-4 d-flex align-items-center mb-4">
+      <div class="card mx-auto" style="width: 18rem;">
           <img class="card-img-top" src="{{ pizza.img }}" alt="Card image cap">
           <div class="card-body">
             <h3 class="card-title">{{ pizza.name }}</h3>
