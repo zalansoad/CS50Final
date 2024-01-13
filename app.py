@@ -157,14 +157,18 @@ def cart():
     
     chosenpizzaid = None
     chosendrinkid = None
+    choseningredid = []
     
     if request.method == "POST":
         #checking if it is a pizza order
         if "pizzaid" in request.form:
             try:
                 chosenpizzaid = int(request.form.get("pizzaid"))
+                choseningredid = [value for value in request.form.getlist('ingredid') if value]
+                    
             except:
                 abort(404)
+        
         if "drinkid" in request.form:
             try:
                 chosendrinkid = int(request.form.get("drinkid"))
@@ -183,11 +187,15 @@ def cart():
         for id in session["cart"]["pizzas"]:
             pizza_order.append(db.execute("SELECT * FROM pizzas WHERE id = ?", id))
         
+        extraingred = []
+        for id in choseningredid:
+            extraingred.append(db.execute("SELECT * FROM ingredients WHERE id = ?", id))
+
         drink_order = []
         for drink_id in session["cart"]["drinks"]:
             drink_order.append(db.execute("SELECT * FROM drinks WHERE id = ?", drink_id))
         
-        return render_template("cart.html", pizza_order=pizza_order, drink_order=drink_order)
+        return render_template("cart.html", pizza_order=pizza_order, drink_order=drink_order, extraingred=extraingred)
 
     
     pizza_order = []
@@ -198,7 +206,7 @@ def cart():
     for drink_id in session["cart"]["drinks"]:
         drink_order.append(db.execute("SELECT * FROM drinks WHERE id = ?", drink_id))
         
-    return render_template("cart.html", pizza_order=pizza_order, drink_order=drink_order)
+    return render_template("cart.html", pizza_order=pizza_order, drink_order=drink_order, choseningredid=choseningredid)
 
 #Creating a dynamic route to handle pizzas
 @app.route("/<pizza_route>")

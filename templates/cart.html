@@ -7,6 +7,7 @@
 {% block main %}
 Debug: {{ drink_order }}
 Debug: {{ pizza_order }}
+Debug: Extra: {{ extraingred }}
 {% if pizza_order %}
 <div class="container">
     <div class="row">
@@ -17,7 +18,7 @@ Debug: {{ pizza_order }}
                 <div class="card-body">
                     <h3 class="card-title">{{ pizza_item[0].name }}</h3>
                     <h5 class="card-title">{{ pizza_item[0].price | usd }}</h5>
-                    <p class="card-text">{{ pizza_item[0].ingredients }}</p>
+                    <p class="card-text">{{ extraingred[0].ingredients }}</p>
                 </div>
             </div>
         </div>  
