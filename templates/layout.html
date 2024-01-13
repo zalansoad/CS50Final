@@ -68,8 +68,9 @@
                         <div class="card mx-auto" style="width: 25rem;">
                             <img class="card-img-top" src="{{ PizzaDetails[0].img }}" alt="Card image cap">
                             <div class="card-body">
-                            <h3 class="card-title">{{ PizzaDetails[0].name }}</h3>
-                            <p class="card-text">{{ PizzaDetails[0].ingredients }}</p>
+                                <input name="pizzaid" type="hidden" value="{{ PizzaDetails[0].id }}">
+                                <h3 class="card-title">{{ PizzaDetails[0].name }}</h3>
+                                <p class="card-text">{{ PizzaDetails[0].ingredients }}</p>
                             </div>
                         </div>
                     </div>

@@ -150,9 +150,55 @@ def drinks():
 @app.route("/cart", methods=["GET", "POST"])
 @login_required
 def cart():
+
+    #Ensure cart exists
+    if "cart" not in session:
+        session["cart"] = {"pizzas": [], "drinks": []}
+    
+    chosenpizzaid = None
+    chosendrinkid = None
+    
     if request.method == "POST":
-        return render_template("cart.html")
-    return render_template("cart.html")
+        #checking if it is a pizza order
+        if "pizzaid" in request.form:
+            try:
+                chosenpizzaid = int(request.form.get("pizzaid"))
+            except:
+                abort(404)
+        if "drinkid" in request.form:
+            try:
+                chosendrinkid = int(request.form.get("drinkid"))
+            except:
+                abort(404)
+        
+        #if item id captured adding it to the session dict
+        if chosenpizzaid:
+            session["cart"]["pizzas"].append(chosenpizzaid)
+        if chosendrinkid:
+            session["cart"]["drinks"].append(chosendrinkid)
+        
+        #iterating over session dict and qerying them one by one, since the 'IN' sql query did not return a value twice.
+        #E.g. I added two pizzas of the same kind and the cart only registered it once because. 
+        pizza_order = []
+        for id in session["cart"]["pizzas"]:
+            pizza_order.append(db.execute("SELECT * FROM pizzas WHERE id = ?", id))
+        
+        drink_order = []
+        for drink_id in session["cart"]["drinks"]:
+            drink_order.append(db.execute("SELECT * FROM drinks WHERE id = ?", drink_id))
+        
+        return render_template("cart.html", pizza_order=pizza_order, drink_order=drink_order)
+
+    
+    pizza_order = []
+    for id in session["cart"]["pizzas"]:
+        pizza_order.append(db.execute("SELECT * FROM pizzas WHERE id = ?", id))
+        
+    drink_order = []
+    for drink_id in session["cart"]["drinks"]:
+        drink_order.append(db.execute("SELECT * FROM drinks WHERE id = ?", drink_id))
+        
+    return render_template("cart.html", pizza_order=pizza_order, drink_order=drink_order)
 
 #Creating a dynamic route to handle pizzas
 @app.route("/<pizza_route>")
