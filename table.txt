@@ -22,7 +22,7 @@ FOREIGN KEY (user_id) REFERENCES users(id));
 CREATE TABLE ingredients (
 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 name TEXT NOT NULL,
-price FLOAT NOT NULL);
+price FLOAT NOT NULL,);
 
 INSERT INTO ingredients (name, price)
 VALUES 

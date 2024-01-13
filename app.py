@@ -147,8 +147,11 @@ def drinks():
     drink = db.execute("SELECT * FROM drinks")
     return render_template("drinks.html", drink=drink)
 
-@app.route("/cart")
+@app.route("/cart", methods=["GET", "POST"])
+@login_required
 def cart():
+    if request.method == "POST":
+        return render_template("cart.html")
     return render_template("cart.html")
 
 #Creating a dynamic route to handle pizzas
@@ -158,9 +161,10 @@ def pizza(pizza_route):
     pizzaroutes = [row["route"] for row in pizzaroutes_data]
     
     PizzaDetails = db.execute("SELECT * FROM pizzas WHERE route = ?", pizza_route)
+    Ingredients = db.execute("SELECT * FROM ingredients")
     if pizza_route not in pizzaroutes:
         abort(404)
     else:
         template_name = f"{pizza_route}.html"
-        return render_template(template_name, pizza_page=True, PizzaDetails=PizzaDetails)
+        return render_template(template_name, pizza_page=True, PizzaDetails=PizzaDetails, Ingredients=Ingredients)
 
