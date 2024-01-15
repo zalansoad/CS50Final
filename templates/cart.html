@@ -1,27 +1,32 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Hawaiian
+    Cart
 {% endblock %}
 
 {% block main %}
 Debug: {{ drink_order }}
 Debug: {{ pizza_order }}
-Debug: Extra: {{ extraingred }}
+
 {% if pizza_order %}
 <div class="container">
     <div class="row">
         {% for pizza_item in pizza_order %}
+        {% for pizza in pizza_item['pizza'] %}
         <div class="col-md-4 mb-4 d-flex align-items-center">
             <div class="card mx-auto" style="width: 18rem;">
-                <img class="card-img-top" src="{{ pizza_item[0].img }}" alt="Card image cap">
+                <img class="card-img-top" src="{{ pizza['img'] }}" alt="Card image cap">
                 <div class="card-body">
-                    <h3 class="card-title">{{ pizza_item[0].name }}</h3>
-                    <h5 class="card-title">{{ pizza_item[0].price | usd }}</h5>
-                    <p class="card-text">{{ extraingred[0].ingredients }}</p>
+                    <h3 class="card-title">{{ pizza['name'] }}</h3>
+                    <h5 class="card-title">{{ pizza['price'] | usd }}</h5>
+                    <p class="card-text">
+                    {% for extra in pizza_item['extra'] %}
+                    {{ extra['name'] }},
+                    {% endfor %}</p> 
                 </div>
             </div>
-        </div>  
+        </div>
+        {% endfor %}  
         {% endfor %}
     </div>
 </div>

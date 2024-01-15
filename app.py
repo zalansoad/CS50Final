@@ -182,7 +182,7 @@ def cart():
         #if item id captured adding it to the session dict
         
         if chosenpizzaid:
-            SelectedPizza = [{'pid': pizzaid, 'extra':choseningredid}]
+            SelectedPizza = [{'pid': chosenpizzaid, 'extra':choseningredid}]
             session["cart"]["allpizzaorder"].append(SelectedPizza)
         if chosendrinkid:
             session["cart"]["drinks"].append(chosendrinkid)
@@ -192,8 +192,8 @@ def cart():
         
         pizza_order = []
         for order in session["cart"]["allpizzaorder"]:
-            pizza_id = order['pid']
-            extra_ingredient_ids = order['extra']
+            pizza_id = order[0]['pid']
+            extra_ingredient_ids = order[0]['extra']
 
             pizza_name = db.execute("SELECT * FROM pizzas WHERE id = ?", pizza_id)
             extra_ingredients = db.execute("SELECT * FROM ingredients WHERE id IN (?)", extra_ingredient_ids)
@@ -207,18 +207,11 @@ def cart():
         for drink_id in session["cart"]["drinks"]:
             drink_order.append(db.execute("SELECT * FROM drinks WHERE id = ?", drink_id))
         
-        return render_template("cart.html", pizza_order=pizza_order, drink_order=drink_order, extraingred=extraingred)
+        return render_template("cart.html", pizza_order=pizza_order, drink_order=drink_order,)
 
     
-    pizza_order = []
-    for id in session["cart"]["pizzas"]:
-        pizza_order.append(db.execute("SELECT * FROM pizzas WHERE id = ?", id))
-        
-    drink_order = []
-    for drink_id in session["cart"]["drinks"]:
-        drink_order.append(db.execute("SELECT * FROM drinks WHERE id = ?", drink_id))
-        
-    return render_template("cart.html", pizza_order=pizza_order, drink_order=drink_order, choseningredid=choseningredid)
+         
+    return render_template("cart.html", pizza_order=pizza_order, drink_order=drink_order)
 
 #Creating a dynamic route to handle pizzas
 @app.route("/<pizza_route>")
