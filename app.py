@@ -154,6 +154,8 @@ def cart():
     #Ensure cart exists
     if "cart" not in session:
         session["cart"] = {"pizzas": [], "drinks": []}
+        #session["cart"] = {"allpizzaorder": [], "drinks": []}
+        #allpizzaorder = [[{'pid': pizzaid}, {'extra':choseningredid}]]
     
     chosenpizzaid = None
     chosendrinkid = None
