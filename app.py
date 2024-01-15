@@ -153,7 +153,7 @@ def cart():
 
     #Ensure cart exists
     if "cart" not in session:
-        session["cart"] = {"pizzas": [], "drinks": []}
+        session["cart"] = {"allpizzaorder": [], "drinks": []}
         #session["cart"] = {"allpizzaorder": [], "drinks": []}
         #allpizzaorder = [[{'pid': pizzaid}, {'extra':choseningredid}]]
     
@@ -176,22 +176,32 @@ def cart():
                 chosendrinkid = int(request.form.get("drinkid"))
             except:
                 abort(404)
+
+        
         
         #if item id captured adding it to the session dict
+        
         if chosenpizzaid:
-            session["cart"]["pizzas"].append(chosenpizzaid)
+            SelectedPizza = [{'pid': pizzaid, 'extra':choseningredid}]
+            session["cart"]["allpizzaorder"].append(SelectedPizza)
         if chosendrinkid:
             session["cart"]["drinks"].append(chosendrinkid)
         
         #iterating over session dict and qerying them one by one, since the 'IN' sql query did not return a value twice.
         #E.g. I added two pizzas of the same kind and the cart only registered it once because. 
-        pizza_order = []
-        for id in session["cart"]["pizzas"]:
-            pizza_order.append(db.execute("SELECT * FROM pizzas WHERE id = ?", id))
         
-        extraingred = []
-        for id in choseningredid:
-            extraingred.append(db.execute("SELECT * FROM ingredients WHERE id = ?", id))
+        pizza_order = []
+        for order in session["cart"]["allpizzaorder"]:
+            pizza_id = order['pid']
+            extra_ingredient_ids = order['extra']
+
+            pizza_name = db.execute("SELECT * FROM pizzas WHERE id = ?", pizza_id)
+            extra_ingredients = db.execute("SELECT * FROM ingredients WHERE id IN (?)", extra_ingredient_ids)
+
+            pizza_order.append({'pizza': pizza_name, 'extra':extra_ingredients})
+
+        
+        
 
         drink_order = []
         for drink_id in session["cart"]["drinks"]:
