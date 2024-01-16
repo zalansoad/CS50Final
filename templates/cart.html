@@ -10,38 +10,45 @@ Debug: {{ pizza_order }}
 
 {% if pizza_order %}
 <div class="container">
+    <h1>Pizzas:</h1>
     <div class="row">
         {% for pizza_item in pizza_order %}
-        {% for pizza in pizza_item['pizza'] %}
-        <div class="col-md-4 mb-4 d-flex align-items-center">
-            <div class="card mx-auto" style="width: 18rem;">
-                <img class="card-img-top" src="{{ pizza['img'] }}" alt="Card image cap">
-                <div class="card-body">
-                    <h3 class="card-title">{{ pizza['name'] }}</h3>
-                    <h5 class="card-title">{{ pizza['price'] | usd }}</h5>
-                    <p class="card-text">
-                    {% for extra in pizza_item['extra'] %}
-                    {{ extra['name'] }},
-                    {% endfor %}</p> 
+            {% for pizza in pizza_item['pizza'] %}
+            <div class="col-md-4 mb-4 d-flex align-items-center">
+                <div class="card mx-auto" style="width: 18rem;">
+                    <form method="post" action="/cart">
+                        <input type="hidden" name="removal_pizza_id" value="{{ pizza['id'] }}">
+                        Debug: {{ pizza['id'] }}
+                        <div class="card-body">
+                            <h3 class="card-title">{{ pizza['name'] }}</h3>
+                            <h5 class="card-title">{{ pizza['price'] | usd }}</h5>
+                            <p class="card-text">
+                            {% for extra in pizza_item['extra'] %}
+                            <input type="hidden" name="removal_extra_id" value="{{ extra['id'] }}">
+                            {{ extra['name'] }},
+                            {% endfor %}</p> 
+                            <button class="btn btn-dark" type="submit">Remove</button>
+                        </div>
+                    </form>
                 </div>
             </div>
-        </div>
-        {% endfor %}  
+            {% endfor %}  
         {% endfor %}
     </div>
 </div>
 {% endif %} 
 {% if drink_order %}
 <div class="container">
+    <h1>Drinks:</h1>
     <div class="row">
     {% for drink_item in drink_order %}
         <div class="col-md-4 mb-4 d-flex align-items-center">
             <div class="card mx-auto" style="width: 18rem;">
-                <img class="card-img-top" src="{{ drink_item[0].img }}" alt="Card image cap">
                 <div class="card-body">
                     <h3 class="card-title">{{ drink_item[0].name }}</h3>
                     <h5 class="card-title">{{ drink_item[0].price | usd }}</h5>
                     <p class="card-text">{{ drink_item[0].ingredients }}</p>
+                    <button class="btn btn-dark" type="submit">Remove</button>
                 </div>
             </div>
         </div> 

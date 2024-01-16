@@ -164,18 +164,12 @@ def cart():
     if request.method == "POST":
         #checking if it is a pizza order
         if "pizzaid" in request.form:
-            try:
-                chosenpizzaid = int(request.form.get("pizzaid"))
-                choseningredid = [value for value in request.form.getlist('ingredid') if value]
+            chosenpizzaid = int(request.form.get("pizzaid"))
+            choseningredid = [value for value in request.form.getlist('ingredid') if value]
                     
-            except:
-                abort(404)
-        
         if "drinkid" in request.form:
-            try:
-                chosendrinkid = int(request.form.get("drinkid"))
-            except:
-                abort(404)
+            chosendrinkid = int(request.form.get("drinkid"))
+            
 
         
         
@@ -189,6 +183,18 @@ def cart():
         
         #iterating over session dict and qerying them one by one, since the 'IN' sql query did not return a value twice.
         #E.g. I added two pizzas of the same kind and the cart only registered it once because. 
+
+
+        ##
+        if "removal_pizza_id" in request.form:
+            RemoveablePizzaID = int(request.form.get("removal_pizza_id"))
+            RemoveableExtra = [value for value in request.form.getlist('removal_extra_id') if value]
+            print(RemoveablePizzaID)
+            print(RemoveableExtra)
+            
+        
+
+        ##
         
         pizza_order = []
         for order in session["cart"]["allpizzaorder"]:
@@ -200,18 +206,28 @@ def cart():
 
             pizza_order.append({'pizza': pizza_name, 'extra':extra_ingredients})
 
-        
-        
-
         drink_order = []
         for drink_id in session["cart"]["drinks"]:
             drink_order.append(db.execute("SELECT * FROM drinks WHERE id = ?", drink_id))
         
         return render_template("cart.html", pizza_order=pizza_order, drink_order=drink_order,)
-
     
-         
-    return render_template("cart.html", pizza_order=pizza_order, drink_order=drink_order)
+    pizza_order = []
+    for order in session["cart"]["allpizzaorder"]:
+        pizza_id = order[0]['pid']
+        extra_ingredient_ids = order[0]['extra']
+
+        pizza_name = db.execute("SELECT * FROM pizzas WHERE id = ?", pizza_id)
+        extra_ingredients = db.execute("SELECT * FROM ingredients WHERE id IN (?)", extra_ingredient_ids)
+
+        pizza_order.append({'pizza': pizza_name, 'extra':extra_ingredients})
+
+    drink_order = []
+    for drink_id in session["cart"]["drinks"]:
+        drink_order.append(db.execute("SELECT * FROM drinks WHERE id = ?", drink_id))
+     
+    return render_template("cart.html", pizza_order=pizza_order, drink_order=drink_order) 
+
 
 #Creating a dynamic route to handle pizzas
 @app.route("/<pizza_route>")
