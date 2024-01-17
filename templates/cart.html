@@ -44,12 +44,15 @@ Debug: {{ pizza_order }}
     {% for drink_item in drink_order %}
         <div class="col-md-4 mb-4 d-flex align-items-center">
             <div class="card mx-auto" style="width: 18rem;">
-                <div class="card-body">
-                    <h3 class="card-title">{{ drink_item[0].name }}</h3>
-                    <h5 class="card-title">{{ drink_item[0].price | usd }}</h5>
-                    <p class="card-text">{{ drink_item[0].ingredients }}</p>
-                    <button class="btn btn-dark" type="submit">Remove</button>
-                </div>
+                <form method="post" action="/cart">
+                    <div class="card-body">
+                        <input type="hidden" name="removal_drink_id" value="{{ drink_item[0].id }}">
+                        <h3 class="card-title">{{ drink_item[0].name }}</h3>
+                        <h5 class="card-title">{{ drink_item[0].price | usd }}</h5>
+                        <p class="card-text">{{ drink_item[0].ingredients }}</p>
+                        <button class="btn btn-dark" type="submit">Remove</button>
+                    </div>
+                </form>
             </div>
         </div> 
 {% endfor %}

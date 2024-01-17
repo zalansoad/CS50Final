@@ -155,7 +155,9 @@ def cart():
     if "cart" not in session:
         session["cart"] = {"allpizzaorder": [], "drinks": []}
         #session["cart"] = {"allpizzaorder": [], "drinks": []}
-        #allpizzaorder = [[{'pid': pizzaid}, {'extra':choseningredid}]]
+        #allpizzaorder = [[{'pid': pizzaid, 'extra':choseningredid}]]
+
+        
     
     chosenpizzaid = None
     chosendrinkid = None
@@ -170,32 +172,37 @@ def cart():
         if "drinkid" in request.form:
             chosendrinkid = int(request.form.get("drinkid"))
             
-
-        
-        
-        #if item id captured adding it to the session dict
-        
+        #if item id captured adding it to the session dict        
         if chosenpizzaid:
             SelectedPizza = [{'pid': chosenpizzaid, 'extra':choseningredid}]
             session["cart"]["allpizzaorder"].append(SelectedPizza)
         if chosendrinkid:
             session["cart"]["drinks"].append(chosendrinkid)
         
-        #iterating over session dict and qerying them one by one, since the 'IN' sql query did not return a value twice.
-        #E.g. I added two pizzas of the same kind and the cart only registered it once because. 
 
-
-        ##
+        #Removing pizza from cart session if id captured
         if "removal_pizza_id" in request.form:
             RemoveablePizzaID = int(request.form.get("removal_pizza_id"))
             RemoveableExtra = [value for value in request.form.getlist('removal_extra_id') if value]
-            print(RemoveablePizzaID)
-            print(RemoveableExtra)
-            
+                     
+            targetList = [{'pid': RemoveablePizzaID, 'extra':RemoveableExtra}]
+            for item in session["cart"]["allpizzaorder"]:
+                if item == targetList:
+                    session["cart"]["allpizzaorder"].remove(targetList)
+                    break
         
+        #Removing drink from cart session if id captured
+        if "removal_drink_id" in request.form:
+            RemoveableDrinkID = int(request.form.get("removal_drink_id"))
 
-        ##
-        
+            for item in session["cart"]["drinks"]:
+                if item == RemoveableDrinkID:
+                    session["cart"]["drinks"].remove(RemoveableDrinkID)
+                    break
+
+
+        #iterating over session dict and qerying them one by one, since the 'IN' sql query did not return a value twice.
+        #E.g. I added two pizzas of the same kind and the cart only registered it once because. 
         pizza_order = []
         for order in session["cart"]["allpizzaorder"]:
             pizza_id = order[0]['pid']
