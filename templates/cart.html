@@ -27,6 +27,7 @@ Debug: {{ pizza_order }}
                             <input type="hidden" name="removal_extra_id" value="{{ extra['id'] }}">
                             {{ extra['name'] }},
                             {% endfor %}</p> 
+                            <p>{{ pizza_item['price'] | usd }}</p>
                             <button class="btn btn-dark" type="submit">Remove</button>
                         </div>
                     </form>
