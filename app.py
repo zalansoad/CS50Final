@@ -6,7 +6,7 @@ from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 
-from helpers import error_message, login_required, usd
+from helpers import error_message, login_required, usd, process_cart
 
 # Configure application
 app = Flask(__name__)
@@ -156,9 +156,7 @@ def cart():
         session["cart"] = {"allpizzaorder": [], "drinks": []}
         #session["cart"] = {"allpizzaorder": [], "drinks": []}
         #allpizzaorder = [[{'pid': pizzaid, 'extra':choseningredid}]]
-
-        
-    
+  
     chosenpizzaid = None
     chosendrinkid = None
     choseningredid = []
@@ -180,7 +178,7 @@ def cart():
             session["cart"]["drinks"].append(chosendrinkid)
         
 
-        #Removing pizza from cart session if id captured
+        #Removing pizza from cart session if removal request id captured
         if "removal_pizza_id" in request.form:
             RemoveablePizzaID = int(request.form.get("removal_pizza_id"))
             RemoveableExtra = [value for value in request.form.getlist('removal_extra_id') if value]
@@ -191,7 +189,7 @@ def cart():
                     session["cart"]["allpizzaorder"].remove(targetList)
                     break
         
-        #Removing drink from cart session if id captured
+        #Removing drink from cart session if removal request id captured
         if "removal_drink_id" in request.form:
             RemoveableDrinkID = int(request.form.get("removal_drink_id"))
 
@@ -201,51 +199,13 @@ def cart():
                     break
 
 
-        #iterating over session dict and qerying them one by one, since the 'IN' sql query did not return a value twice.
-        #E.g. I added two pizzas of the same kind and the cart only registered it once because. 
-        pizza_order = []
-        totalprice = 0
-        for order in session["cart"]["allpizzaorder"]:
-            pizza_id = order[0]['pid']
-            extra_ingredient_ids = order[0]['extra']
-
-            pizza_name = db.execute("SELECT * FROM pizzas WHERE id = ?", pizza_id)
-            totalprice = totalprice + pizza_name[0]['price']
-
-            extra_ingredients = db.execute("SELECT * FROM ingredients WHERE id IN (?)", extra_ingredient_ids)
-            extraprice = 0
-            for price in extra_ingredient_ids:
-                pricelist = db.execute("SELECT price FROM ingredients WHERE id = ?", price)
-                extraprice = extraprice + pricelist[0]['price']
-                totalprice = totalprice + pricelist[0]['price']
-                
-            pizza_order.append({'pizza': pizza_name, 'extra':extra_ingredients, 'price': extraprice})
-
-        drink_order = []
-        for drink_id in session["cart"]["drinks"]:
-            drinkdata = db.execute("SELECT * FROM drinks WHERE id = ?", drink_id)
-            totalprice = totalprice + drinkdata[0]['price']
-            drink_order.append(drinkdata)
-
-        
-        return render_template("cart.html", pizza_order=pizza_order, drink_order=drink_order, totalprice=totalprice)
+        #Retrieving data based on the ids stored in the session, and returning the data to the webpage 
+        result = process_cart()
+        return result
     
-    pizza_order = []
-    for order in session["cart"]["allpizzaorder"]:
-        pizza_id = order[0]['pid']
-        extra_ingredient_ids = order[0]['extra']
-
-        pizza_name = db.execute("SELECT * FROM pizzas WHERE id = ?", pizza_id)
-        extra_ingredients = db.execute("SELECT * FROM ingredients WHERE id IN (?)", extra_ingredient_ids)
-
-        pizza_order.append({'pizza': pizza_name, 'extra':extra_ingredients})
-
-    drink_order = []
-    for drink_id in session["cart"]["drinks"]:
-        drink_order.append(db.execute("SELECT * FROM drinks WHERE id = ?", drink_id))
-     
-    return render_template("cart.html", pizza_order=pizza_order, drink_order=drink_order) 
-
+    result = process_cart()
+    return result
+    
 
 #Creating a dynamic route to handle pizzas
 @app.route("/<pizza_route>")
