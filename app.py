@@ -147,6 +147,11 @@ def drinks():
     drink = db.execute("SELECT * FROM drinks")
     return render_template("drinks.html", drink=drink)
 
+@app.route("/orderpage", methods=["GET", "POST"])
+@login_required
+def orderpage():
+    return render_template("orderpage.html")
+
 @app.route("/cart", methods=["GET", "POST"])
 @login_required
 def cart():
