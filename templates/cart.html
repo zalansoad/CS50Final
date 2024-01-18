@@ -5,8 +5,8 @@
 {% endblock %}
 
 {% block main %}
-Debug: {{ drink_order }}
-Debug: {{ pizza_order }}
+Debug: {{ totalprice }}
+
 
 {% if pizza_order %}
 <div class="container">
@@ -27,7 +27,9 @@ Debug: {{ pizza_order }}
                             <input type="hidden" name="removal_extra_id" value="{{ extra['id'] }}">
                             {{ extra['name'] }},
                             {% endfor %}</p> 
+                            {% if pizza_item['price'] %}
                             <p>{{ pizza_item['price'] | usd }}</p>
+                            {% endif %} 
                             <button class="btn btn-dark" type="submit">Remove</button>
                         </div>
                     </form>
@@ -56,11 +58,37 @@ Debug: {{ pizza_order }}
                 </form>
             </div>
         </div> 
-{% endfor %}
+    {% endfor %}
     </div>
 </div> 
-{% endif %} 
+{% endif %}
+
 {% if not pizza_order and not drink_order %}
 <h1> Empty cart</h1>
+<div class="container">
+    <div class="row">
+        <div class="d-flex justify-content-center">
+            <a href="/" class="btn btn-dark">Buy Pizza</a>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="container">
+    <div class="row">
+        <div class="d-flex justify-content-center">
+            <h2> TOTAL: </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="d-flex justify-content-center">
+            <h1> {{ totalprice | usd }}</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="d-flex justify-content-center">
+            <button class="btn btn-dark" type="submit">Order</button>
+        </div>
+    </div>
+</div>
 {% endif %}
 {% endblock %}

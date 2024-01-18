@@ -204,27 +204,31 @@ def cart():
         #iterating over session dict and qerying them one by one, since the 'IN' sql query did not return a value twice.
         #E.g. I added two pizzas of the same kind and the cart only registered it once because. 
         pizza_order = []
-        
+        totalprice = 0
         for order in session["cart"]["allpizzaorder"]:
             pizza_id = order[0]['pid']
             extra_ingredient_ids = order[0]['extra']
 
             pizza_name = db.execute("SELECT * FROM pizzas WHERE id = ?", pizza_id)
+            totalprice = totalprice + pizza_name[0]['price']
+
             extra_ingredients = db.execute("SELECT * FROM ingredients WHERE id IN (?)", extra_ingredient_ids)
             extraprice = 0
             for price in extra_ingredient_ids:
                 pricelist = db.execute("SELECT price FROM ingredients WHERE id = ?", price)
                 extraprice = extraprice + pricelist[0]['price']
+                totalprice = totalprice + pricelist[0]['price']
                 
-                
-            
             pizza_order.append({'pizza': pizza_name, 'extra':extra_ingredients, 'price': extraprice})
 
         drink_order = []
         for drink_id in session["cart"]["drinks"]:
-            drink_order.append(db.execute("SELECT * FROM drinks WHERE id = ?", drink_id))
+            drinkdata = db.execute("SELECT * FROM drinks WHERE id = ?", drink_id)
+            totalprice = totalprice + drinkdata[0]['price']
+            drink_order.append(drinkdata)
+
         
-        return render_template("cart.html", pizza_order=pizza_order, drink_order=drink_order,)
+        return render_template("cart.html", pizza_order=pizza_order, drink_order=drink_order, totalprice=totalprice)
     
     pizza_order = []
     for order in session["cart"]["allpizzaorder"]:
