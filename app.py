@@ -147,10 +147,6 @@ def drinks():
     drink = db.execute("SELECT * FROM drinks")
     return render_template("drinks.html", drink=drink)
 
-@app.route("/orderpage", methods=["GET", "POST"])
-@login_required
-def orderpage():
-    return render_template("orderpage.html")
 
 @app.route("/cart", methods=["GET", "POST"])
 @login_required
@@ -210,6 +206,40 @@ def cart():
     
     result = process_cart()
     return result
+
+@app.route("/order", methods=["POST"])
+@login_required
+def order():
+    if not request.form.get("FirstName"):
+            flash("Please fill in all fields.")
+            return redirect("/cart")
+
+    if not request.form.get("LastName"):
+            flash("Please fill in all fields.")
+            return redirect("/cart")
+
+    if not request.form.get("street"):
+            flash("Please fill in all fields.")
+            return redirect("/cart")
+
+    if not request.form.get("city"):
+            flash("Please fill in all fields.")
+            return redirect("/cart")
+
+    if not request.form.get("zip"):
+            flash("Please fill in all fields.")
+            return redirect("/cart")
+
+    if not request.form.get("zip"):
+            flash("Please fill in all fields.")
+            return redirect("/cart")
+    
+    if not request.form.get("termsandcond"):
+            flash("Please accept the TERMS.")
+            return redirect("/cart")
+                    
+    return redirect("/myorder")
+
     
 
 #Creating a dynamic route to handle pizzas

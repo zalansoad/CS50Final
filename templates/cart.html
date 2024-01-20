@@ -69,6 +69,7 @@
         </div>
     </div>
 </div>
+
 {% else %}
 <div class="container">
     <div class="row">
@@ -83,9 +84,60 @@
     </div>
     <div class="row">
         <div class="d-flex justify-content-center">
-            <a href="/orderpage" class="btn btn-dark">Buy Pizza</a>
+            <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#orderdetails">
+                Order
+            </button>
         </div>
     </div>
 </div>
+<form method="post" action="/order">
+<div class="modal fade" id="orderdetails" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Order Details</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">        
+            <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="FirstName" class="form-label">First name</label>
+                  <input type="text" class="form-control" name="FirstName" id="FirstName" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="LastName" class="form-label">Last name</label>
+                  <input type="text" class="form-control" name="LastName" id="LastName" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="street" class="form-label">Street and House nr.</label>
+                    <input type="text" class="form-control" name="street" id="street" required>
+                  </div>
+                <div class="col-md-6">
+                  <label for="city" class="form-label">City</label>
+                  <input type="text" class="form-control" name="city" id="city" required>
+                </div>
+                
+                <div class="col-md-3">
+                  <label for="zip" class="form-label">Zip</label>
+                  <input type="text" class="form-control" name="zip" id="zip" required>
+                </div>
+                <div class="col-12">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="termsandcond" name="termsandcond" id="termsandcond" required>
+                    <label class="form-check-label" for="termsandcond">
+                        By placing an order, I acknowledge and agree that payment will be required upon delivery.
+                    </label>
+                  </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Finalise Order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </form>
 {% endif %}
 {% endblock %}
