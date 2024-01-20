@@ -237,7 +237,43 @@ def order():
     if not request.form.get("termsandcond"):
             flash("Please accept the TERMS.")
             return redirect("/cart")
-                    
+
+    #session["cart"] = {"allpizzaorder": [], "drinks": []}
+
+    #Result: ['Sprite', 'Coca-Cola', 'Iced Tea']
+    ordered_drinks = []
+    for drink in session["cart"]["drinks"]:
+        drinkdata = db.execute("SELECT name FROM drinks WHERE id = ?", drink)
+        drinkname = drinkdata[0]["name"]
+        ordered_drinks.append(drinkname)
+    #Result: Sprite, Coca-Cola, Iced Tea    
+    string_ordered_drinks = ', '.join(ordered_drinks)
+    
+
+    #Creating string out of pizza ids and extra ingredients.
+    ordered_pizzas = []
+    for plist in session["cart"]["allpizzaorder"]:
+        ingredients = []
+        pizzadata = db.execute("SELECT name FROM pizzas WHERE id = ?", plist[0]['pid'])
+        pizzaname = pizzadata[0]["name"]    
+        for ingred in plist[0]['extra']:
+            ingreddata = db.execute("SELECT name FROM ingredients WHERE id = ?", ingred)
+            ingredname = ingreddata[0]["name"]
+            ingredients.append(ingredname)
+        string_ingreds = ', '.join(ingredients)
+        pizzawithingred = pizzaname + " - " + string_ingreds
+        ordered_pizzas.append(pizzawithingred)
+    #Result: Mushroom - Onions, Bell Peppers, Spinach; Hawaiian - Olives, Onions; Margherita - 
+    string_ordered_pizzas = '\n'.join(ordered_pizzas)
+
+    #string_ordered_pizzas egy sql fieldbe és string_ordered_drinks egy masikba
+    print(string_ordered_pizzas)
+    print(string_ordered_drinks)
+
+    
+
+        
+
     return redirect("/myorder")
 
     
