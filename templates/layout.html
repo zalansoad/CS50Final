@@ -58,50 +58,7 @@
         {% endif %}
 
         <main class="container py-5 text-center">
-            {% block main %}{% endblock %}
-            {% if pizza_page %}
-            <div class="container">
-                <form action="/cart" method="post">
-                    <div class="row">
-                    <!-- First Card -->
-                    <div class="col-12 col-sm-6 d-flex align-items-center mb-4">
-                        <div class="card mx-auto" style="width: 25rem;">
-                            <img class="card-img-top" src="{{ PizzaDetails[0].img }}" alt="Card image cap">
-                            <div class="card-body">
-                                <input name="pizzaid" type="hidden" value="{{ PizzaDetails[0].id }}">
-                                <h3 class="card-title">{{ PizzaDetails[0].name }}</h3>
-                                <h3 class="card-title">Extra Ingredient:</h3>
-                                <p class="card-text">{{ PizzaDetails[0].ingredients }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Ingredients -->
-                    <div class="col-12 col-sm-6 d-flex align-items-center mb-4">
-                        <div class="card mx-auto p-4" style="width: 18rem;">
-                            <h3 class="card-title">Extra Ingredients:</h3>
-                            {% for ingredient in Ingredients %}
-                            <div class="form-check">
-                                <input class="form-check-input" name="ingredid" type="checkbox" value= "{{ ingredient.id }}" id="{{ ingredient.id }}">
-                                <label class="form-check-label" for="{{ ingredient.id }}">
-                                {{ ingredient.name }} - {{ ingredient.price | usd }}
-                                </label>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    </div>
-                    <div class="row">
-                        <div class="d-flex justify-content-center">
-                            {% if session["user_id"] %}
-                            <button class="btn btn-dark" type="submit">Add to cart</button>
-                            {% else %}
-                            <a href="/login" class="btn btn-dark">Log in</a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </form>
-              </div>    
-            {% endif %}           
+            {% block main %}{% endblock %}       
         </main>
 
         <footer class="mb-5 small text-center text-muted">

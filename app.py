@@ -270,10 +270,6 @@ def order():
     print(string_ordered_pizzas)
     print(string_ordered_drinks)
 
-    
-
-        
-
     return redirect("/myorder")
 
     
@@ -289,6 +285,6 @@ def pizza(pizza_route):
     if pizza_route not in pizzaroutes:
         abort(404)
     else:
-        template_name = f"{pizza_route}.html"
+        template_name = "pizzapage.html"
         return render_template(template_name, pizza_page=True, PizzaDetails=PizzaDetails, Ingredients=Ingredients)
 
