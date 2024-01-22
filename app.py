@@ -20,6 +20,7 @@ Session(app)
 # Custom filter
 app.jinja_env.filters["usd"] = usd
 
+
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///pizza.db")
 
@@ -139,7 +140,8 @@ def logout():
 @login_required
 def myorder():
     """show active orders"""
-    return render_template("myorder.html")
+    order = db.execute("SELECT id, pizza_name, drinks, price, status, street, city, zip FROM myorder WHERE user_id = ?", session["user_id"])
+    return render_template("myorder.html", order=order)
 
 @app.route("/drinks")
 def drinks():
@@ -259,7 +261,6 @@ def order():
     #Result: Sprite, Coca-Cola, Iced Tea    
     string_ordered_drinks = ', '.join(ordered_drinks)
     
-
     #Creating string out of pizza names and extra ingredients.
     ordered_pizzas = []
     for plist in session["cart"]["allpizzaorder"]:
@@ -283,7 +284,7 @@ def order():
     time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
     #Adding order to the db
-    db.execute("INSERT INTO myorder (user_name, pizza_name, drinks, price, time, first_name, last_name, street, city, zip, terms) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", username, string_ordered_pizzas, string_ordered_drinks, totalprice, time, FirstName, LastName, street, city, zipcode, termsandcond)
+    db.execute("INSERT INTO myorder (user_id, user_name, pizza_name, drinks, price, time, first_name, last_name, street, city, zip, terms) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", session["user_id"], username, string_ordered_pizzas, string_ordered_drinks, totalprice, time, FirstName, LastName, street, city, zipcode, termsandcond)
     
     #clear cart
     session["cart"]["allpizzaorder"] = []

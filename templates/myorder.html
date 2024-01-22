@@ -7,24 +7,65 @@
 {% block main %}
 <div class="container">
   <div class="row">
+    {% for card in order %}
+    {%if card['status'] == "Order received" %}
     <div class="col-md-4">
-      <div class="card" style="width: 18rem;">
-        <img src="static/images/bacon.jpg" class="card-img-top" alt="asd">
+      <div class="card text-bg-info mb-3" style="max-width: 18rem;">
+        <div class="card-header">Order Number {{ card['id']}}</div>
         <div class="card-body">
-          <p class="card-text">Ingredients:</p>
-          <p class="card-text">asd  asd asd asd asd asd asd </p>
+          <h5 class="card-title">Order:</h5>
+          <p class="card-text">{{ card['pizza_name']}}</p>
+          <p class="card-text">{{ card['drinks']}}</p>
+          <p class="card-text">{{ card['price']}}</p>
+          <p class="card-text">{{ card['status']}}</p>
+          <p class="card-text">{{ card['street']}}, {{ card['city']}}, {{ card['zip']}}</p>
         </div>
-      </div>
+      </div>    
     </div>
-      <div class="col-md-4">  
-        <div class="card" style="width: 18rem;">
-          <img src="static/images/bacon.jpg" class="card-img-top" alt="kjhkhj">
-          <div class="card-body">
-            <p class="card-text">Ingredients:</p>
-            <p class="card-text">asd  asd asd asd asd asd asd</p>
-          </div>
+    {%endif%}
+    {% endfor %}
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    {% for card in order %}
+    {%if card['status'] == "In progress" %}
+    <div class="col-md-4">
+      <div class="card text-bg-warning mb-3" style="max-width: 18rem;">
+        <div class="card-header">Order Number {{ card['id']}}</div>
+        <div class="card-body">
+          <h5 class="card-title">Order:</h5>
+          <p class="card-text">{{ card['pizza_name']}}</p>
+          <p class="card-text">{{ card['drinks']}}</p>
+          <p class="card-text">{{ card['price']}}</p>
+          <p class="card-text">{{ card['status']}}</p>
+          <p class="card-text">{{ card['street']}}, {{ card['city']}}, {{ card['zip']}}</p>
         </div>
-      </div>
+      </div>    
+    </div>
+    {%endif%}
+    {% endfor %}
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    {% for card in order %}
+    {%if card['status'] == "Delivered" %}
+    <div class="col-md-4">
+      <div class="card text-bg-success mb-3" style="max-width: 18rem;">
+        <div class="card-header">Order Number {{ card['id']}}</div>
+        <div class="card-body">
+          <h5 class="card-title">Order:</h5>
+          <p class="card-text">{{ card['pizza_name']}}</p>
+          <p class="card-text">{{ card['drinks']}}</p>
+          <p class="card-text">{{ card['price']}}</p>
+          <p class="card-text">{{ card['status']}}</p>
+          <p class="card-text">{{ card['street']}}, {{ card['city']}}, {{ card['zip']}}</p>
+        </div>
+      </div>    
+    </div>
+    {%endif%}
+    {% endfor %}
   </div>
 </div>
 {% endblock %}
