@@ -39,28 +39,53 @@ def usd(value):
 
 def process_cart():
     pizza_order = []
-    totalprice = 0
+
     for order in session["cart"]["allpizzaorder"]:
         pizza_id = order[0]['pid']
         extra_ingredient_ids = order[0]['extra']
 
         pizza_name = db.execute("SELECT * FROM pizzas WHERE id = ?", pizza_id)
-        totalprice = totalprice + pizza_name[0]['price']
+        
 
         extra_ingredients = db.execute("SELECT * FROM ingredients WHERE id IN (?)", extra_ingredient_ids)
         extraprice = 0
         for price in extra_ingredient_ids:
             pricelist = db.execute("SELECT price FROM ingredients WHERE id = ?", price)
             extraprice = extraprice + pricelist[0]['price']
-            totalprice = totalprice + pricelist[0]['price']
+            
                 
         pizza_order.append({'pizza': pizza_name, 'extra':extra_ingredients, 'price': extraprice})
 
     drink_order = []
     for drink_id in session["cart"]["drinks"]:
         drinkdata = db.execute("SELECT * FROM drinks WHERE id = ?", drink_id)
-        totalprice = totalprice + drinkdata[0]['price']
         drink_order.append(drinkdata)
+    
+    totalprice = finalprice()
 
         
     return render_template("cart.html", pizza_order=pizza_order, drink_order=drink_order, totalprice=totalprice)
+
+def finalprice():
+    totalprice = 0
+    for order in session["cart"]["allpizzaorder"]:
+        pizza_id = order[0]['pid']
+        extra_ingredient_ids = order[0]['extra']
+
+        pizza_name = db.execute("SELECT price FROM pizzas WHERE id = ?", pizza_id)
+        totalprice = totalprice + pizza_name[0]['price']
+
+        extra_ingredients = db.execute("SELECT price FROM ingredients WHERE id IN (?)", extra_ingredient_ids)
+        extraprice = 0
+        for price in extra_ingredient_ids:
+            pricelist = db.execute("SELECT price FROM ingredients WHERE id = ?", price)
+            extraprice = extraprice + pricelist[0]['price']
+            totalprice = totalprice + pricelist[0]['price']
+
+    drink_order = []
+    for drink_id in session["cart"]["drinks"]:
+        drinkdata = db.execute("SELECT price FROM drinks WHERE id = ?", drink_id)
+        totalprice = totalprice + drinkdata[0]['price']
+        
+        
+    return round(totalprice, 2)

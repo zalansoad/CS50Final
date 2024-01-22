@@ -9,9 +9,8 @@ CREATE UNIQUE INDEX admin_name ON admin (admin_name);
 
 CREATE TABLE myorder (
 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-user_id INTEGER NOT NULL,
+user_name TEXT NOT NULL,
 pizza_name TEXT,
-extras TEXT,
 drinks TEXT,
 price FLOAT NOT NULL,
 time TEXT NOT NULL,
@@ -20,9 +19,9 @@ first_name TEXT NOT NULL,
 last_name TEXT NOT NULL,
 street TEXT NOT NULL,
 city TEXT NOT NULL,
-zip integer NOT NULL,
+zip TEXT NOT NULL,
 terms TEXT NOT NULL,
-FOREIGN KEY (user_id) REFERENCES users(id));
+FOREIGN KEY (user_name) REFERENCES users(username));
 
 -------------INGREDIENTS TABLE ----------------
 

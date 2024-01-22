@@ -6,7 +6,7 @@ from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 
-from helpers import error_message, login_required, usd, process_cart
+from helpers import error_message, login_required, usd, process_cart, finalprice
 
 # Configure application
 app = Flask(__name__)
@@ -211,36 +211,46 @@ def cart():
 @login_required
 def order():
     if not request.form.get("FirstName"):
-            flash("Please fill in all fields.")
-            return redirect("/cart")
+        flash("Please fill in all fields.")
+        return redirect("/cart")
+    else:
+        FirstName = request.form.get("FirstName")
 
     if not request.form.get("LastName"):
-            flash("Please fill in all fields.")
-            return redirect("/cart")
+        flash("Please fill in all fields.")
+        return redirect("/cart")
+    else:
+        LastName = request.form.get("LastName")
 
     if not request.form.get("street"):
-            flash("Please fill in all fields.")
-            return redirect("/cart")
+        flash("Please fill in all fields.")
+        return redirect("/cart")
+    else:
+        street = request.form.get("street")
 
     if not request.form.get("city"):
-            flash("Please fill in all fields.")
-            return redirect("/cart")
+        flash("Please fill in all fields.")
+        return redirect("/cart")
+    else:
+        city = request.form.get("city")
 
     if not request.form.get("zip"):
-            flash("Please fill in all fields.")
-            return redirect("/cart")
-
-    if not request.form.get("zip"):
-            flash("Please fill in all fields.")
-            return redirect("/cart")
-    
+        flash("Please fill in all fields.")
+        return redirect("/cart")
+    else:
+        zipcode = request.form.get("zip")
+   
     if not request.form.get("termsandcond"):
-            flash("Please accept the TERMS.")
-            return redirect("/cart")
+        flash("Please accept the TERMS.")
+        return redirect("/cart")
+    else:
+        termsandcond = request.form.get("termsandcond")
 
-    #session["cart"] = {"allpizzaorder": [], "drinks": []}
+    #Gettin username
+    user_namedict = db.execute("SELECT username FROM users WHERE id = ?", session["user_id"])
+    username = user_namedict[0]['username']
 
-    #Result: ['Sprite', 'Coca-Cola', 'Iced Tea']
+    #Creating a string out of the ordered drinks
     ordered_drinks = []
     for drink in session["cart"]["drinks"]:
         drinkdata = db.execute("SELECT name FROM drinks WHERE id = ?", drink)
@@ -250,7 +260,7 @@ def order():
     string_ordered_drinks = ', '.join(ordered_drinks)
     
 
-    #Creating string out of pizza ids and extra ingredients.
+    #Creating string out of pizza names and extra ingredients.
     ordered_pizzas = []
     for plist in session["cart"]["allpizzaorder"]:
         ingredients = []
@@ -266,13 +276,21 @@ def order():
     #Result: Mushroom - Onions, Bell Peppers, Spinach; Hawaiian - Olives, Onions; Margherita - 
     string_ordered_pizzas = '\n'.join(ordered_pizzas)
 
-    #string_ordered_pizzas egy sql fieldbe és string_ordered_drinks egy masikba
-    print(string_ordered_pizzas)
-    print(string_ordered_drinks)
+    #Getting the total price
+    totalprice = finalprice()
 
+    #Order time
+    time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
+    #Adding order to the db
+    db.execute("INSERT INTO myorder (user_name, pizza_name, drinks, price, time, first_name, last_name, street, city, zip, terms) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", username, string_ordered_pizzas, string_ordered_drinks, totalprice, time, FirstName, LastName, street, city, zipcode, termsandcond)
+    
+    #clear cart
+    session["cart"]["allpizzaorder"] = []
+    session["cart"]["drinks"] = []
+    
     return redirect("/myorder")
 
-    
 
 #Creating a dynamic route to handle pizzas
 @app.route("/<pizza_route>")
