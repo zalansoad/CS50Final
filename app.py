@@ -292,6 +292,22 @@ def order():
     
     return redirect("/myorder")
 
+@app.route("/cancelorder", methods=["POST"])
+@login_required
+def cancelorder():
+    #creating the list of 'Order received' list to make sure the user won't be able to cancel other orders
+    ListOfOrders = db.execute("SELECT id FROM myorder WHERE user_id = ? AND status = ?", session["user_id"], "Order received")
+    cancelledID = int(request.form.get("orderid"))
+    print(ListOfOrders)
+    print(cancelledID)
+    for order in ListOfOrders:
+        orderid = order["id"]
+        if cancelledID == orderid:
+            print("found")
+            print(orderid)
+        else:
+            print("not found")
+    return redirect("/myorder")
 
 #Creating a dynamic route to handle pizzas
 @app.route("/<pizza_route>")
