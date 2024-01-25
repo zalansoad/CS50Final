@@ -4,6 +4,15 @@
     Cart
 {% endblock %}
 
+<script>
+    var perfEntries = performance.getEntriesByType("navigation");
+
+    if (perfEntries.length && perfEntries[0].type === "back_forward") {
+        window.location.href = "/cart";
+    }
+</script>
+
+
 {% block main %}
 
 {% if pizza_order %}
@@ -14,7 +23,7 @@
             {% for pizza in pizza_item['pizza'] %}
             <div class="col-md-4 mb-4 d-flex align-items-center">
                 <div class="card mx-auto" style="width: 18rem;">
-                    <form method="post" action="/cart">
+                    <form autocomplete="off" method="post" action="/cart">
                         <input type="hidden" name="removal_pizza_id" value="{{ pizza['id'] }}">
                         <div class="card-body">
                             <h3 class="card-title">{{ pizza['name'] }}</h3>
@@ -44,12 +53,11 @@
     {% for drink_item in drink_order %}
         <div class="col-md-4 mb-4 d-flex align-items-center">
             <div class="card mx-auto" style="width: 18rem;">
-                <form method="post" action="/cart">
+                <form autocomplete="off" method="post" action="/cart">
                     <div class="card-body">
                         <input type="hidden" name="removal_drink_id" value="{{ drink_item[0].id }}">
                         <h3 class="card-title">{{ drink_item[0].name }}</h3>
                         <h5 class="card-title">{{ drink_item[0].price | usd }}</h5>
-                        <p class="card-text">{{ drink_item[0].ingredients }}</p>
                         <button class="btn btn-dark" type="submit">Remove</button>
                     </div>
                 </form>
@@ -90,7 +98,7 @@
         </div>
     </div>
 </div>
-<form method="post" action="/order">
+<form autocomplete="off" method="post" action="/order">
 <div class="modal fade" id="orderdetails" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">

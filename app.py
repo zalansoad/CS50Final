@@ -5,7 +5,7 @@ from flask import Flask, flash, redirect, render_template, request, session, abo
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
-
+import secrets
 from helpers import error_message, login_required, usd, process_cart, finalprice
 
 # Configure application
@@ -16,6 +16,14 @@ app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
+
+#@app.after_request
+#def add_header(r):
+ #   r.headers["Cache-Control"] = "no-cache, no-store, max-age=0, must-revalidate"
+  #  r.headers["Pragma"] = "no-cache"
+   # r.headers["Expires"] = "0"
+    #return r
+
 
 # Custom filter
 app.jinja_env.filters["usd"] = usd
@@ -30,7 +38,7 @@ def page_not_found(error):
 
 @app.route("/")
 def index():
-    pizzas = db.execute("SELECT * FROM pizzas")
+    pizzas = db.execute("SELECT img, name, price, ingredients, route FROM pizzas")
     return render_template("index.html", pizzas=pizzas)
 
 @app.route("/login", methods=["GET", "POST"])
@@ -146,8 +154,10 @@ def myorder():
 @app.route("/drinks")
 def drinks():
     """list drinks"""
+    drinktoken = secrets.token_hex(16)
+    session['drink_token'] = drinktoken
     drink = db.execute("SELECT * FROM drinks")
-    return render_template("drinks.html", drink=drink)
+    return render_template("drinks.html", drink=drink, drinktoken=drinktoken)
 
 
 @app.route("/cart", methods=["GET", "POST"])
@@ -165,46 +175,74 @@ def cart():
     choseningredid = []
     
     if request.method == "POST":
-        #checking if it is a pizza order
-        if "pizzaid" in request.form:
-            chosenpizzaid = int(request.form.get("pizzaid"))
-            choseningredid = [value for value in request.form.getlist('ingredid') if value]
+        print(request.form.get('form_token'))
+        if request.form.get('form_token') == session.pop('form_token', None):
+            pizzaidsquery = db.execute("SELECT id FROM pizzas")
+            extraidsquery = db.execute("SELECT id FROM ingredients")
+            drinkidsquery = db.execute("SELECT id FROM drinks")
+            #checking if it is a pizza order
+            if "pizzaid" in request.form:
+                chosenpizzaid = int(request.form.get("pizzaid"))
+                choseningredid = [value for value in request.form.getlist('ingredid') if value]
+
+                #check if selected pizza is in the pizza list.
+                pizzaids = [row['id'] for row in pizzaidsquery]
+                if chosenpizzaid not in pizzaids:
+                    flash("Do not manipulate pizza IDs!")
+                    return redirect("/")
+
+                #check if selected ingred is in the ingred list.
+                extraids = [row['id'] for row in extraidsquery]
+                for eid in choseningredid:
+                    if int(eid) not in extraids:
+                        flash("Do not manipulate ingredient IDs!")
+                        return redirect("/")
+                        
+            if "drinkid" in request.form:
+                if request.form.get('drink_token') == session.pop('drink_token', None):
+                    chosendrinkid = int(request.form.get("drinkid"))
                     
-        if "drinkid" in request.form:
-            chosendrinkid = int(request.form.get("drinkid"))
+                    #check if selected drink is in the drink list.
+                    drinkids = [row['id'] for row in drinkidsquery]
+                    if chosendrinkid not in drinkids:
+                        flash("Do not manipulate drink IDs!")
+                        return redirect("/")
+                
+            #if item id captured adding it to the session dict        
+            if chosenpizzaid:
+                SelectedPizza = [{'pid': chosenpizzaid, 'extra':choseningredid}]
+                session["cart"]["allpizzaorder"].append(SelectedPizza)
+            if chosendrinkid:
+                session["cart"]["drinks"].append(chosendrinkid)
             
-        #if item id captured adding it to the session dict        
-        if chosenpizzaid:
-            SelectedPizza = [{'pid': chosenpizzaid, 'extra':choseningredid}]
-            session["cart"]["allpizzaorder"].append(SelectedPizza)
-        if chosendrinkid:
-            session["cart"]["drinks"].append(chosendrinkid)
+
+            #Removing pizza from cart session if removal request id captured
+            if "removal_pizza_id" in request.form:
+                RemoveablePizzaID = int(request.form.get("removal_pizza_id"))
+                RemoveableExtra = [value for value in request.form.getlist('removal_extra_id') if value]
+                        
+                targetList = [{'pid': RemoveablePizzaID, 'extra':RemoveableExtra}]
+                for item in session["cart"]["allpizzaorder"]:
+                    if item == targetList:
+                        session["cart"]["allpizzaorder"].remove(targetList)
+                        break
+            
+            #Removing drink from cart session if removal request id captured
+            if "removal_drink_id" in request.form:
+                RemoveableDrinkID = int(request.form.get("removal_drink_id"))
+
+                for item in session["cart"]["drinks"]:
+                    if item == RemoveableDrinkID:
+                        session["cart"]["drinks"].remove(RemoveableDrinkID)
+                        break
+
+            
+            #Retrieving data based on the ids stored in the session, and returning the data to the webpage 
+            result = process_cart()
+            return result
         
-
-        #Removing pizza from cart session if removal request id captured
-        if "removal_pizza_id" in request.form:
-            RemoveablePizzaID = int(request.form.get("removal_pizza_id"))
-            RemoveableExtra = [value for value in request.form.getlist('removal_extra_id') if value]
-                     
-            targetList = [{'pid': RemoveablePizzaID, 'extra':RemoveableExtra}]
-            for item in session["cart"]["allpizzaorder"]:
-                if item == targetList:
-                    session["cart"]["allpizzaorder"].remove(targetList)
-                    break
-        
-        #Removing drink from cart session if removal request id captured
-        if "removal_drink_id" in request.form:
-            RemoveableDrinkID = int(request.form.get("removal_drink_id"))
-
-            for item in session["cart"]["drinks"]:
-                if item == RemoveableDrinkID:
-                    session["cart"]["drinks"].remove(RemoveableDrinkID)
-                    break
-
-
-        #Retrieving data based on the ids stored in the session, and returning the data to the webpage 
-        result = process_cart()
-        return result
+        else:
+            return redirect("/cart")
     
     result = process_cart()
     return result
@@ -290,36 +328,37 @@ def order():
     session["cart"]["allpizzaorder"] = []
     session["cart"]["drinks"] = []
     
-    return redirect("/myorder")
+    return redirect("/myorder", code=302)
 
 @app.route("/cancelorder", methods=["POST"])
 @login_required
 def cancelorder():
     #creating the list of 'Order received' list to make sure the user won't be able to cancel other orders
-    ListOfOrders = db.execute("SELECT id FROM myorder WHERE user_id = ? AND status = ?", session["user_id"], "Order received")
+    Orderdata = db.execute("SELECT id FROM myorder WHERE user_id = ? AND status = ?", session["user_id"], "Order received")
+    ListOfOrders = [row["id"] for row in Orderdata]
     cancelledID = int(request.form.get("orderid"))
-    print(ListOfOrders)
-    print(cancelledID)
-    for order in ListOfOrders:
-        orderid = order["id"]
-        if cancelledID == orderid:
-            print("found")
-            print(orderid)
-        else:
-            print("not found")
+    if cancelledID not in ListOfOrders:
+        flash("You can only cancel orders with 'Order received' status.")
+        return redirect("/myorder")
+    else:
+        db.execute("UPDATE myorder SET status = ? WHERE user_id = ? AND id = ?", "Cancelled", session["user_id"], cancelledID)
+
     return redirect("/myorder")
 
 #Creating a dynamic route to handle pizzas
 @app.route("/<pizza_route>")
 def pizza(pizza_route):
-    pizzaroutes_data = db.execute("select route from pizzas")
+    pizzaroutes_data = db.execute("SELECT route FROM pizzas")
     pizzaroutes = [row["route"] for row in pizzaroutes_data]
+
+    token = secrets.token_hex(16)
+    session['form_token'] = token
     
-    PizzaDetails = db.execute("SELECT * FROM pizzas WHERE route = ?", pizza_route)
+    PizzaDetails = db.execute("SELECT id, name, ingredients, img, price FROM pizzas WHERE route = ?", pizza_route)
     Ingredients = db.execute("SELECT * FROM ingredients")
     if pizza_route not in pizzaroutes:
         abort(404)
     else:
         template_name = "pizzapage.html"
-        return render_template(template_name, pizza_page=True, PizzaDetails=PizzaDetails, Ingredients=Ingredients)
+        return render_template(template_name, PizzaDetails=PizzaDetails, Ingredients=Ingredients, token=token)
 

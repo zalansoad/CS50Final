@@ -16,6 +16,7 @@
             <h3 class="card-title">{{ drink.name }}</h3>
             <h5 class="card-title">{{ drink.price | usd }}</h5>
             <form action="/cart" method="post">
+              <input type="hidden" name="drink_token" value="{{ drinktoken }}">
               <input name="drinkid" type="hidden" value="{{ drink.id }}">
               <button class="btn btn-dark" type="submit">Add to cart</button>
             </form>

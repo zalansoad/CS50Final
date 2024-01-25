@@ -10,20 +10,29 @@
     {% for card in order %}
     {%if card['status'] == "Order received" %}
     <div class="col-md-4">
-      <div class="card text-bg-info mb-3" style="max-width: 18rem;">
-        <div class="card-header">Order Number {{ card['id']}}</div>
+      <div class="card text-bg-light mb-3" style="max-width: 18rem;">
+        <div class="card-header">
+          <h5>Order Number {{ card['id']}}</h5>
+          <h6>{{ card['status']}}</h6>
+        </div>
         <div class="card-body">
-          <h5 class="card-title">Order:</h5>
+          {% if card['pizza_name'] %}
+          <h5 class="card-title">Pizza:</h5>
           <p class="card-text">{{ card['pizza_name']}}</p>
+          {% endif %}
+          {% if card['drinks'] %}
+          <h5 class="card-title">Drink:</h5>
           <p class="card-text">{{ card['drinks']}}</p>
-          <p class="card-text">{{ card['price']}}</p>
-          <p class="card-text">{{ card['status']}}</p>
+          {% endif %}
+          <h5 class="card-title">Price:</h5>
+          <p class="card-text">{{ card['price'] | usd}}</p>
+          <h5 class="card-title">Delivery Address:</h5>
           <p class="card-text">{{ card['street']}}, {{ card['city']}}, {{ card['zip']}}</p>
-          <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#cancelorder">Cancel Order</button>
+          <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#cancelorder{{ card['id'] }}">Cancel Order</button>
         </div>
       </div>  
     </div>
-    <div class="modal" id="cancelorder" tabindex="-1">
+    <div class="modal" id="cancelorder{{ card['id'] }}" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -54,13 +63,22 @@
     {%if card['status'] == "In progress" %}
     <div class="col-md-4">
       <div class="card text-bg-warning mb-3" style="max-width: 18rem;">
-        <div class="card-header">Order Number {{ card['id']}}</div>
+        <div class="card-header">
+          <h5>Order Number {{ card['id']}}</h5>
+          <h6>{{ card['status']}}</h6>
+        </div>
         <div class="card-body">
-          <h5 class="card-title">Order:</h5>
+          {% if card['pizza_name'] %}
+          <h5 class="card-title">Pizza:</h5>
           <p class="card-text">{{ card['pizza_name']}}</p>
+          {% endif %}
+          {% if card['drinks'] %}
+          <h5 class="card-title">Drink:</h5>
           <p class="card-text">{{ card['drinks']}}</p>
-          <p class="card-text">{{ card['price']}}</p>
-          <p class="card-text">{{ card['status']}}</p>
+          {% endif %}
+          <h5 class="card-title">Price:</h5>
+          <p class="card-text">{{ card['price'] | usd}}</p>
+          <h5 class="card-title">Delivery Address:</h5>
           <p class="card-text">{{ card['street']}}, {{ card['city']}}, {{ card['zip']}}</p>
         </div>
       </div>    
@@ -75,13 +93,22 @@
     {%if card['status'] == "Delivered" %}
     <div class="col-md-4">
       <div class="card text-bg-success mb-3" style="max-width: 18rem;">
-        <div class="card-header">Order Number {{ card['id']}}</div>
+        <div class="card-header">
+          <h5>Order Number {{ card['id']}}</h5>
+          <h6>{{ card['status']}}</h6>
+        </div>
         <div class="card-body">
-          <h5 class="card-title">Order:</h5>
+          {% if card['pizza_name'] %}
+          <h5 class="card-title">Pizza:</h5>
           <p class="card-text">{{ card['pizza_name']}}</p>
+          {% endif %}
+          {% if card['drinks'] %}
+          <h5 class="card-title">Drink:</h5>
           <p class="card-text">{{ card['drinks']}}</p>
-          <p class="card-text">{{ card['price']}}</p>
-          <p class="card-text">{{ card['status']}}</p>
+          {% endif %}
+          <h5 class="card-title">Price:</h5>
+          <p class="card-text">{{ card['price'] | usd}}</p>
+          <h5 class="card-title">Delivery Address:</h5>
           <p class="card-text">{{ card['street']}}, {{ card['city']}}, {{ card['zip']}}</p>
         </div>
       </div>    
@@ -96,13 +123,22 @@
     {%if card['status'] == "Cancelled" %}
     <div class="col-md-4">
       <div class="card text-bg-danger mb-3" style="max-width: 18rem;">
-        <div class="card-header">Order Number {{ card['id']}}</div>
+        <div class="card-header">
+          <h5>Order Number {{ card['id']}}</h5>
+          <h6>{{ card['status']}}</h6>
+        </div>
         <div class="card-body">
-          <h5 class="card-title">Order:</h5>
+          {% if card['pizza_name'] %}
+          <h5 class="card-title">Pizza:</h5>
           <p class="card-text">{{ card['pizza_name']}}</p>
+          {% endif %}
+          {% if card['drinks'] %}
+          <h5 class="card-title">Drink:</h5>
           <p class="card-text">{{ card['drinks']}}</p>
-          <p class="card-text">{{ card['price']}}</p>
-          <p class="card-text">{{ card['status']}}</p>
+          {% endif %}
+          <h5 class="card-title">Price:</h5>
+          <p class="card-text">{{ card['price'] | usd}}</p>
+          <h5 class="card-title">Delivery Address:</h5>
           <p class="card-text">{{ card['street']}}, {{ card['city']}}, {{ card['zip']}}</p>
         </div>
       </div>    

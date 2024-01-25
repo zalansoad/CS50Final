@@ -44,9 +44,8 @@ def process_cart():
         pizza_id = order[0]['pid']
         extra_ingredient_ids = order[0]['extra']
 
-        pizza_name = db.execute("SELECT * FROM pizzas WHERE id = ?", pizza_id)
+        pizza_details = db.execute("SELECT id, name, price FROM pizzas WHERE id = ?", pizza_id)
         
-
         extra_ingredients = db.execute("SELECT * FROM ingredients WHERE id IN (?)", extra_ingredient_ids)
         extraprice = 0
         for price in extra_ingredient_ids:
@@ -54,11 +53,11 @@ def process_cart():
             extraprice = extraprice + pricelist[0]['price']
             
                 
-        pizza_order.append({'pizza': pizza_name, 'extra':extra_ingredients, 'price': extraprice})
+        pizza_order.append({'pizza': pizza_details, 'extra':extra_ingredients, 'price': extraprice})
 
     drink_order = []
     for drink_id in session["cart"]["drinks"]:
-        drinkdata = db.execute("SELECT * FROM drinks WHERE id = ?", drink_id)
+        drinkdata = db.execute("SELECT id, name, price FROM drinks WHERE id = ?", drink_id)
         drink_order.append(drinkdata)
     
     totalprice = finalprice()
