@@ -175,13 +175,16 @@ def cart():
     choseningredid = []
     
     if request.method == "POST":
-        print(request.form.get('form_token'))
+        #introducing tokens to preventcart caching the cart after using browser back button after the order is taken.
         if request.form.get('form_token') == session.pop('form_token', None):
+            
             pizzaidsquery = db.execute("SELECT id FROM pizzas")
             extraidsquery = db.execute("SELECT id FROM ingredients")
             drinkidsquery = db.execute("SELECT id FROM drinks")
+            
             #checking if it is a pizza order
             if "pizzaid" in request.form:
+                
                 chosenpizzaid = int(request.form.get("pizzaid"))
                 choseningredid = [value for value in request.form.getlist('ingredid') if value]
 

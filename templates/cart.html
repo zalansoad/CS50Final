@@ -4,13 +4,7 @@
     Cart
 {% endblock %}
 
-<script>
-    var perfEntries = performance.getEntriesByType("navigation");
 
-    if (perfEntries.length && perfEntries[0].type === "back_forward") {
-        window.location.href = "/cart";
-    }
-</script>
 
 
 {% block main %}
