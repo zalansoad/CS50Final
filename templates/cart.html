@@ -10,6 +10,7 @@
 {% block main %}
 
 {% if pizza_order %}
+<div style="height:100%" class="container">
 <div class="container">
     <h1>Pizzas:</h1>
     <div class="row">
@@ -63,14 +64,19 @@
 {% endif %}
 
 {% if not pizza_order and not drink_order %}
-<h1> Empty cart</h1>
 <div class="container">
-    <div class="row">
-        <div class="d-flex justify-content-center">
-            <a href="/" class="btn btn-dark">Buy Pizza</a>
+    <div style="margin-bottom: 5rem; margin-top: 11rem;">
+        <h1> Empty cart</h1>
+    </div>
+    <div style="margin-bottom: 15rem; class="container">
+        <div class="row">
+            <div class="d-flex justify-content-center">
+                <a href="/" class="btn btn-dark">Buy Pizza</a>
+            </div>
         </div>
     </div>
 </div>
+
 
 {% else %}
 <div class="container">
@@ -142,4 +148,5 @@
   </div>
   </form>
 {% endif %}
+</div>
 {% endblock %}
