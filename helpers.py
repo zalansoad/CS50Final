@@ -4,7 +4,7 @@ from flask import redirect, render_template, session
 from cs50 import SQL
 
 # Configure CS50 Library to use SQLite database
-db = SQL("sqlite:///pizza.db")
+db = SQL("sqlite:///instance/pizza.db")
 
 def login_required(f):
     """

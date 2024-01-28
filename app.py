@@ -7,9 +7,14 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 import secrets
 from helpers import error_message, login_required, usd, process_cart, finalprice
+from flask_admin import Admin
+from flask_sqlalchemy import SQLAlchemy
+from flask_admin.contrib.sqla import ModelView
 
 # Configure application
 app = Flask(__name__)
+
+admin = Admin(app)
 
 
 # Configure session to use filesystem (instead of signed cookies)
@@ -17,12 +22,18 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-#@app.after_request
-#def add_header(r):
- #   r.headers["Cache-Control"] = "no-cache, no-store, max-age=0, must-revalidate"
-  #  r.headers["Pragma"] = "no-cache"
-   # r.headers["Expires"] = "0"
-    #return r
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///pizza.db"
+dba = SQLAlchemy(app)
+
+class Order(dba.Model):
+    id = dba.Column(dba.Integer, primary_key=True)
+    pizza_name = dba.Column(dba.String(1000))
+
+    __tablename__ = 'myorder'
+
+admin.add_view(ModelView(Order, dba.session))
+
+
 
 
 # Custom filter
@@ -30,11 +41,18 @@ app.jinja_env.filters["usd"] = usd
 
 
 # Configure CS50 Library to use SQLite database
-db = SQL("sqlite:///pizza.db")
+db = SQL("sqlite:///instance/pizza.db")
+print(db)
 
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('404.html'), 404
+
+
+
+@app.route('/admin')
+def admin():
+    return render_template('admin.html')
 
 @app.route("/")
 def index():
