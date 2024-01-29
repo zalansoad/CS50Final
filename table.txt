@@ -1,5 +1,5 @@
 Tables:
-CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, username TEXT NOT NULL, hash TEXT NOT NULL);
+CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, username TEXT NOT NULL, hash TEXT NOT NULL, type TEXT NOT NULL DEFAULT 'user');
 CREATE UNIQUE INDEX username ON users (username);
 
 CREATE TABLE admin (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, admin_name TEXT NOT NULL, hash TEXT NOT NULL);
@@ -187,3 +187,10 @@ if request.method == "POST":
                 chosendrinkid = int(request.form.get("drinkid"))
             except:
                 abort(404)
+
+
+
+admin page, myorder dropdown
+ajax
+front end
+cacheles

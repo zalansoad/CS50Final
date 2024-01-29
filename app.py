@@ -10,12 +10,12 @@ from helpers import error_message, login_required, usd, process_cart, finalprice
 from flask_admin import Admin
 from flask_sqlalchemy import SQLAlchemy
 from flask_admin.contrib.sqla import ModelView
+from wtforms import SelectField
 
 # Configure application
 app = Flask(__name__)
 
 admin = Admin(app)
-
 
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_PERMANENT"] = False
@@ -26,15 +26,38 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///pizza.db"
 dba = SQLAlchemy(app)
 
 class Order(dba.Model):
-    id = dba.Column(dba.Integer, primary_key=True)
-    pizza_name = dba.Column(dba.String(1000))
+    order_id = dba.Column(dba.Integer, primary_key=True)
+    status = dba.Column(dba.String)
+    user_name = dba.Column(dba.String)
+    pizza_name = dba.Column(dba.String)
+    drinks = dba.Column(dba.String)
+    first_name = dba.Column(dba.String)
+    last_name = dba.Column(dba.String)
+    city = dba.Column(dba.String)
+    zip = dba.Column(dba.String)
+    street = dba.Column(dba.String)
+    price = dba.Column(dba.Integer)
+
 
     __tablename__ = 'myorder'
 
-admin.add_view(ModelView(Order, dba.session))
+class MyModel(ModelView):
+      column_display_pk = True
+      form_overrides = {'status': SelectField}
 
 
+      form_args = {'status': {'choices': [('Order received'), ('In progress'), ('Delivered'), ('Cancelled')]}}
 
+admin.add_view(MyModel(Order, dba.session))
+
+
+@app.after_request
+def after_request(response):
+    """Ensure responses aren't cached"""
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Expires"] = 0
+    response.headers["Pragma"] = "no-cache"
+    return response
 
 # Custom filter
 app.jinja_env.filters["usd"] = usd
@@ -49,10 +72,6 @@ def page_not_found(error):
     return render_template('404.html'), 404
 
 
-
-@app.route('/admin')
-def admin():
-    return render_template('admin.html')
 
 @app.route("/")
 def index():
@@ -99,6 +118,7 @@ def login():
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
+        session["user_type"] = rows[0]["type"]
 
         # Redirect user to home page
         flash("Logged in.")
@@ -166,7 +186,7 @@ def logout():
 @login_required
 def myorder():
     """show active orders"""
-    order = db.execute("SELECT id, pizza_name, drinks, price, status, street, city, zip FROM myorder WHERE user_id = ?", session["user_id"])
+    order = db.execute("SELECT order_id, pizza_name, drinks, price, status, street, city, zip FROM myorder WHERE user_id = ?", session["user_id"])
     return render_template("myorder.html", order=order)
 
 @app.route("/drinks")
@@ -355,14 +375,14 @@ def order():
 @login_required
 def cancelorder():
     #creating the list of 'Order received' list to make sure the user won't be able to cancel other orders
-    Orderdata = db.execute("SELECT id FROM myorder WHERE user_id = ? AND status = ?", session["user_id"], "Order received")
-    ListOfOrders = [row["id"] for row in Orderdata]
+    Orderdata = db.execute("SELECT order_id FROM myorder WHERE user_id = ? AND status = ?", session["user_id"], "Order received")
+    ListOfOrders = [row["order_id"] for row in Orderdata]
     cancelledID = int(request.form.get("orderid"))
     if cancelledID not in ListOfOrders:
         flash("You can only cancel orders with 'Order received' status.")
         return redirect("/myorder")
     else:
-        db.execute("UPDATE myorder SET status = ? WHERE user_id = ? AND id = ?", "Cancelled", session["user_id"], cancelledID)
+        db.execute("UPDATE myorder SET status = ? WHERE user_id = ? AND order_id = ?", "Cancelled", session["user_id"], cancelledID)
 
     return redirect("/myorder")
 

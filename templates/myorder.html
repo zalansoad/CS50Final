@@ -12,7 +12,7 @@
     <div class="col-md-4">
       <div class="card text-bg-light mb-3" style="max-width: 18rem;">
         <div class="card-header">
-          <h5>Order Number {{ card['id']}}</h5>
+          <h5>Order Number {{ card['order_id']}}</h5>
           <h6>{{ card['status']}}</h6>
         </div>
         <div class="card-body">
@@ -28,11 +28,11 @@
           <p class="card-text">{{ card['price'] | usd}}</p>
           <h5 class="card-title">Delivery Address:</h5>
           <p class="card-text">{{ card['street']}}, {{ card['city']}}, {{ card['zip']}}</p>
-          <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#cancelorder{{ card['id'] }}">Cancel Order</button>
+          <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#cancelorder{{ card['order_id'] }}">Cancel Order</button>
         </div>
       </div>  
     </div>
-    <div class="modal" id="cancelorder{{ card['id'] }}" tabindex="-1">
+    <div class="modal" id="cancelorder{{ card['order_id'] }}" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -45,7 +45,7 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
             <form action="/cancelorder" method="post">
-            <input type="hidden" name="orderid" value="{{ card['id'] }}">
+            <input type="hidden" name="orderid" value="{{ card['order_id'] }}">
             <button type="submit" class="btn btn-danger">Cancel Order</button>
             </form>
           </div>
@@ -64,7 +64,7 @@
     <div class="col-md-4">
       <div class="card text-bg-warning mb-3" style="max-width: 18rem;">
         <div class="card-header">
-          <h5>Order Number {{ card['id']}}</h5>
+          <h5>Order Number {{ card['order_id']}}</h5>
           <h6>{{ card['status']}}</h6>
         </div>
         <div class="card-body">
@@ -94,7 +94,7 @@
     <div class="col-md-4">
       <div class="card text-bg-success mb-3" style="max-width: 18rem;">
         <div class="card-header">
-          <h5>Order Number {{ card['id']}}</h5>
+          <h5>Order Number {{ card['order_id']}}</h5>
           <h6>{{ card['status']}}</h6>
         </div>
         <div class="card-body">
@@ -124,7 +124,7 @@
     <div class="col-md-4">
       <div class="card text-bg-danger mb-3" style="max-width: 18rem;">
         <div class="card-header">
-          <h5>Order Number {{ card['id']}}</h5>
+          <h5>Order Number {{ card['order_id']}}</h5>
           <h6>{{ card['status']}}</h6>
         </div>
         <div class="card-body">
