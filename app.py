@@ -7,7 +7,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 import secrets
 from helpers import login_required, usd, process_cart, finalprice
-from flask_admin import Admin
+from flask_admin import Admin, AdminIndexView, expose
 from flask_sqlalchemy import SQLAlchemy
 from flask_admin.contrib.sqla import ModelView
 from wtforms import SelectField
@@ -16,7 +16,7 @@ from flask_admin.menu import MenuLink
 # Configure application
 app = Flask(__name__)
 
-admin = Admin(app)
+
 
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_PERMANENT"] = False
@@ -26,6 +26,13 @@ Session(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///pizza.db"
 dba = SQLAlchemy(app)
 
+class SecuredHomeView(AdminIndexView):
+    def is_accessible(self):
+        return session.get("user_type") == "admin"
+
+@expose('/')                                                                   
+def index(self):                                                               
+    return self.render('/admin/index.html')
 
 class Order(dba.Model):
     order_id = dba.Column(dba.Integer, primary_key=True)
@@ -43,6 +50,7 @@ class Order(dba.Model):
 
     __tablename__ = 'myorder'
 
+
 class MyModel(ModelView):
     column_display_pk = True
     form_overrides = {'status': SelectField}
@@ -50,6 +58,8 @@ class MyModel(ModelView):
 
     def is_accessible(self):
         return session.get("user_type") == "admin"
+
+admin = Admin(app, index_view=SecuredHomeView(url='/admin'))
 
 admin.add_view(MyModel(Order, dba.session))
 
@@ -80,13 +90,6 @@ def page_not_found(error):
 def index():
     pizzas = db.execute("SELECT img, name, price, ingredients, route FROM pizzas")
     return render_template("index.html", pizzas=pizzas)
-
-@app.route("/admin")
-def admin():
-    if not session.get("user_type") == "admin":
-        flash("Not authorised")
-        return redirect("/")
-    return redirect("/admin/")
 
 
 @app.route("/login", methods=["GET", "POST"])
