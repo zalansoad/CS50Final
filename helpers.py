@@ -1,10 +1,11 @@
 from functools import wraps
-from flask import render_template
+from flask import render_template, flash
 from flask import redirect, render_template, session
 from cs50 import SQL
 
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///instance/pizza.db")
+
 
 def login_required(f):
     """
@@ -18,8 +19,6 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-def error_message(message, code=400):
-    return render_template("apology.html", message=message, code=code)
 
 def login_required(f):
     """

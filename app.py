@@ -6,11 +6,12 @@ from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 import secrets
-from helpers import error_message, login_required, usd, process_cart, finalprice
+from helpers import login_required, usd, process_cart, finalprice
 from flask_admin import Admin
 from flask_sqlalchemy import SQLAlchemy
 from flask_admin.contrib.sqla import ModelView
 from wtforms import SelectField
+from flask_admin.menu import MenuLink
 
 # Configure application
 app = Flask(__name__)
@@ -24,6 +25,7 @@ Session(app)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///pizza.db"
 dba = SQLAlchemy(app)
+
 
 class Order(dba.Model):
     order_id = dba.Column(dba.Integer, primary_key=True)
@@ -42,11 +44,12 @@ class Order(dba.Model):
     __tablename__ = 'myorder'
 
 class MyModel(ModelView):
-      column_display_pk = True
-      form_overrides = {'status': SelectField}
+    column_display_pk = True
+    form_overrides = {'status': SelectField}
+    form_args = {'status': {'choices': [('Order received'), ('In progress'), ('Delivered'), ('Cancelled')]}}
 
-
-      form_args = {'status': {'choices': [('Order received'), ('In progress'), ('Delivered'), ('Cancelled')]}}
+    def is_accessible(self):
+        return session.get("user_type") == "admin"
 
 admin.add_view(MyModel(Order, dba.session))
 
@@ -67,16 +70,24 @@ app.jinja_env.filters["usd"] = usd
 db = SQL("sqlite:///instance/pizza.db")
 print(db)
 
+
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('404.html'), 404
-
 
 
 @app.route("/")
 def index():
     pizzas = db.execute("SELECT img, name, price, ingredients, route FROM pizzas")
     return render_template("index.html", pizzas=pizzas)
+
+@app.route("/admin")
+def admin():
+    if not session.get("user_type") == "admin":
+        flash("Not authorised")
+        return redirect("/")
+    return redirect("/admin/")
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
