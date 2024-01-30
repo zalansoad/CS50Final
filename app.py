@@ -59,6 +59,7 @@ class Users(dba.Model):
 
 class OrderModel(ModelView):
     column_display_pk = True
+    column_filters = ("status",)
     form_overrides = {'status': SelectField}
     form_args = {'status': {'choices': [('Order received'), ('In progress'), ('Delivered'), ('Cancelled')]}}
 
