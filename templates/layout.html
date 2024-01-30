@@ -22,17 +22,17 @@
             });
         </script>
         
-        
-
         <title>PizzaTime: {% block title %}{% endblock %}</title>
 
     </head>
 
     <body style="height: 100%">
 
-        <nav class="bg-light border navbar navbar-expand-md navbar-light">
+        <nav class="bg-light text-light border navbar navbar-expand-md navbar-light">
             <div class="container-fluid">
-                <a class="navbar-brand" href="/">PizzaTime</a>
+                <a class="navbar-brand" href="/">
+                    <img src="static/images/PizzaTime.png" alt="PizzaTime" width="50" height="50">
+                </a>
                 <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbar" data-bs-toggle="collapse" type="button">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -75,27 +75,33 @@
             {% block main %}{% endblock %}       
         </main>
 
-        <footer>
-            <div class="mb-5 small text-center text-muted">
+        <footer class="bg-dark text-light">
+            <div class="mb-5 small text-center">
                 CS50 Final Project 2024
             </div>
-            <div style="background-color: black; color: white;">
+            <div>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4 align-items-center text-center">
                         <h4>Contact PizzaTime</h4>
                         <p>For Inquiries and Orders:</p>
                         <p>Phone: +1 555-1234-5678</p>
-                        <p>Email: info@pizzatime.com</p>
+                        <p>Email: info@CS50PizzaTime.com</p>
                         <p>Visit Our Location:</p>
-                        <p>Address: 789 Pizza Street, Pizzaville, PT 12345</p>
+                        <p>Address: 50 Pizza Street, Pizzaville, PT 5050</p>
                     </div>
-                    <div class="col-md-6">
-                        <h4>Contact PizzaTime</h4>
-                        <p>For Inquiries and Orders:</p>
-                        <p>Phone: +1 555-1234-5678</p>
-                        <p>Email: info@pizzatime.com</p>
-                        <p>Visit Our Location:</p>
-                        <p>Address: 789 Pizza Street, Pizzaville, PT 12345</p>
+                    <div class="col-md-4 d-flex align-items-center justify-content-center">
+                        <img src="static/images/PizzaTime.png" alt="PizzaTime"style="width: 15rem; height: auto;">
+                    </div>
+
+                    <div class="col-md-4 align-items-center text-center">
+                        <h4>PizzaTime Opening Hours</h4>
+                        <p><strong>Monday:</strong> 11:00 AM - 10:00 PM</p>
+                        <p><strong>Tuesday:</strong> 11:00 AM - 10:00 PM</p>
+                        <p><strong>Wednesday:</strong> 11:00 AM - 10:00 PM</p>
+                        <p><strong>Thursday:</strong> 11:00 AM - 10:00 PM</p>
+                        <p><strong>Friday:</strong> 11:00 AM - 10:00 PM</p>
+                        <p><strong>Saturday:</strong> 11:00 AM - 10:00 PM</p>
+                        <p><strong>Sunday:</strong> 11:00 AM - 10:00 PM</p>
                     </div>
                 </div>
             </div>

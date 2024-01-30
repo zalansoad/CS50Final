@@ -16,8 +16,6 @@ from flask_admin.menu import MenuLink
 # Configure application
 app = Flask(__name__)
 
-
-
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
@@ -26,6 +24,7 @@ Session(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///pizza.db"
 dba = SQLAlchemy(app)
 
+#reducing accessibility to admin page
 class SecuredHomeView(AdminIndexView):
     def is_accessible(self):
         return session.get("user_type") == "admin"
@@ -47,11 +46,18 @@ class Order(dba.Model):
     street = dba.Column(dba.String)
     price = dba.Column(dba.Integer)
 
-
     __tablename__ = 'myorder'
 
+class Users(dba.Model):
+    id = dba.Column(dba.Integer, primary_key=True)
+    username = dba.Column(dba.String)
+    type = dba.Column(dba.String)
+    
+    __tablename__ = 'users'
 
-class MyModel(ModelView):
+
+
+class OrderModel(ModelView):
     column_display_pk = True
     form_overrides = {'status': SelectField}
     form_args = {'status': {'choices': [('Order received'), ('In progress'), ('Delivered'), ('Cancelled')]}}
@@ -59,18 +65,26 @@ class MyModel(ModelView):
     def is_accessible(self):
         return session.get("user_type") == "admin"
 
+class UserModel(ModelView):
+    column_display_pk = True
+    form_overrides = {'type': SelectField}
+    form_args = {'type': {'choices': [('user'), ('admin')]}}
+
+    def is_accessible(self):
+        return session.get("user_type") == "admin"
+
 admin = Admin(app, index_view=SecuredHomeView(url='/admin'))
 
-admin.add_view(MyModel(Order, dba.session))
+admin.add_view(OrderModel(Order, dba.session))
+admin.add_view(UserModel(Users, dba.session))
 
 
-@app.after_request
-def after_request(response):
-    """Ensure responses aren't cached"""
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    response.headers["Expires"] = 0
-    response.headers["Pragma"] = "no-cache"
-    return response
+#@app.after_request
+#def after_request(response):
+ #   response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+  #  response.headers["Expires"] = 0
+   # response.headers["Pragma"] = "no-cache"
+    #return response
 
 # Custom filter
 app.jinja_env.filters["usd"] = usd

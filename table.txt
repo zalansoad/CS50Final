@@ -190,7 +190,6 @@ if request.method == "POST":
 
 
 
-admin page, myorder dropdown
 ajax
-front end
+
 cacheles

@@ -9,10 +9,11 @@
 
 {% block main %}
 
+
 {% if pizza_order %}
 <div style="height:100%" class="container">
 <div class="container">
-    <h1>Pizzas:</h1>
+    <h1 style="font-family: cursive; margin-top: 3rem; margin-bottom: 3rem;">Pizzas:</h1>
     <div class="row">
         {% for pizza_item in pizza_order %}
             {% for pizza in pizza_item['pizza'] %}
@@ -20,7 +21,7 @@
                 <div class="card mx-auto" style="width: 18rem;">
                     <form autocomplete="off" method="post" action="/cart">
                         <input type="hidden" name="removal_pizza_id" value="{{ pizza['id'] }}">
-                        <div class="card-body">
+                        <div class="card-body bg-light">
                             <h3 class="card-title">{{ pizza['name'] }}</h3>
                             <h5 class="card-title">{{ pizza['price'] | usd }}</h5>
                             <p class="card-text">
@@ -31,7 +32,7 @@
                             {% if pizza_item['price'] %}
                             <p>{{ pizza_item['price'] | usd }}</p>
                             {% endif %} 
-                            <button class="btn btn-dark" type="submit">Remove</button>
+                            <button class="btn btn-danger" type="submit">Remove</button>
                         </div>
                     </form>
                 </div>
@@ -43,17 +44,17 @@
 {% endif %} 
 {% if drink_order %}
 <div class="container">
-    <h1>Drinks:</h1>
+    <h1 style="font-family: cursive; margin-top: 3rem; margin-bottom: 3rem;">Drinks:</h1>
     <div class="row">
     {% for drink_item in drink_order %}
         <div class="col-md-4 mb-4 d-flex align-items-center">
             <div class="card mx-auto" style="width: 18rem;">
                 <form autocomplete="off" method="post" action="/cart">
-                    <div class="card-body">
+                    <div class="card-body bg-light">
                         <input type="hidden" name="removal_drink_id" value="{{ drink_item[0].id }}">
                         <h3 class="card-title">{{ drink_item[0].name }}</h3>
                         <h5 class="card-title">{{ drink_item[0].price | usd }}</h5>
-                        <button class="btn btn-dark" type="submit">Remove</button>
+                        <button class="btn btn-danger" type="submit">Remove</button>
                     </div>
                 </form>
             </div>
@@ -65,7 +66,7 @@
 
 {% if not pizza_order and not drink_order %}
 <div class="container">
-    <div style="margin-bottom: 5rem; margin-top: 11rem;">
+    <div style="margin-bottom: 5rem; margin-top: 5rem; font-family: cursive">
         <h1> Empty cart</h1>
     </div>
     <div style="margin-bottom: 15rem;" class="container">
@@ -81,18 +82,18 @@
 {% else %}
 <div class="container">
     <div class="row">
-        <div class="d-flex justify-content-center">
-            <h2> TOTAL: </h2>
+        <div class="d-flex justify-content-end">
+            <h3> TOTAL: </h3>
         </div>
     </div>
     <div class="row">
-        <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-end">
             <h1> {{ totalprice | usd }}</h1>
         </div>
     </div>
     <div class="row">
         <div class="d-flex justify-content-center">
-            <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#orderdetails">
+            <button style="margin-top: 3rem; margin-bottom: 3rem; font-size: 2rem" type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#orderdetails">
                 Order
             </button>
         </div>
