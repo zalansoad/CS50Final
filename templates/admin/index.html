@@ -1,6 +1,33 @@
 {% extends 'admin/master.html' %}
 
 {% block body %}
-  <p>Hello world</p>
-  <a href="/" class="btn">Main page</a>
+  <div class="text-center">
+    <h1>PizzaTime Admin Page</h1>
+  </div>
+  <div style="margin-top: 5rem; margin-bottom: 5rem;">
+  <a href="/" class="btn btn-primary">Back to main page</a>
+  </div>
+
+  <div class="text-center">
+    <h2>Current status of Pizza Orders</h2>
+  </div>
+
+  <div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="well text-center">
+                    <h3 class="card-title">In progress:</h3>
+                    <h2 class="card-text">{{ in_progress }}</h2>                    
+            </div>
+        </div>
+        <div class="col-md-6">
+          <div class="well text-center">
+                  <h3 class="card-title">Order Received:</h3>
+                  <h2 class="card-text">{{ received }}</h2>
+          </div>
+      </div>
+    </div>
+</div>
+
+
 {% endblock %}

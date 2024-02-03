@@ -24,14 +24,25 @@ Session(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///pizza.db"
 dba = SQLAlchemy(app)
 
+
+
+def in_progress_orders():
+    return Order.query.filter_by(status='In progress').count()
+def order_received_orders():
+    return Order.query.filter_by(status='Order received').count()
+
 #reducing accessibility to admin page
 class SecuredHomeView(AdminIndexView):
     def is_accessible(self):
         return session.get("user_type") == "admin"
+    
+    @expose('/')                                                                   
+    def index(self):  
+        in_progress = in_progress_orders()
+        received = order_received_orders()
+        print(in_progress)                                                       
+        return self.render('/admin/index.html', in_progress=in_progress, received=received)
 
-@expose('/')                                                                   
-def index(self):                                                               
-    return self.render('/admin/index.html')
 
 class Order(dba.Model):
     order_id = dba.Column(dba.Integer, primary_key=True)
@@ -74,7 +85,7 @@ class UserModel(ModelView):
     def is_accessible(self):
         return session.get("user_type") == "admin"
 
-admin = Admin(app, index_view=SecuredHomeView(url='/admin'))
+admin = Admin(app, index_view=SecuredHomeView(url='/admin'), template_mode='bootstrap3')
 
 admin.add_view(OrderModel(Order, dba.session))
 admin.add_view(UserModel(Users, dba.session))
