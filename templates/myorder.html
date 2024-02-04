@@ -13,7 +13,7 @@
       <div class="card text-bg-light mb-3" style="max-width: 18rem;">
         <div class="card-header">
           <h5>Order Number {{ card['order_id']}}</h5>
-          <h6>{{ card['status']}}</h6>
+          <h6><span id="status{{ card['order_id'] }}">{{ card['status'] }}</span></h6>
         </div>
         <div class="card-body">
           {% if card['pizza_name'] %}
@@ -65,7 +65,7 @@
       <div class="card text-bg-warning mb-3" style="max-width: 18rem;">
         <div class="card-header">
           <h5>Order Number {{ card['order_id']}}</h5>
-          <h6>{{ card['status']}}</h6>
+          <h6><span id="status{{ card['order_id'] }}">{{ card['status'] }}</span></h6>
         </div>
         <div class="card-body">
           {% if card['pizza_name'] %}
@@ -95,7 +95,7 @@
       <div class="card text-bg-success mb-3" style="max-width: 18rem;">
         <div class="card-header">
           <h5>Order Number {{ card['order_id']}}</h5>
-          <h6>{{ card['status']}}</h6>
+          <h6><span id="status{{ card['order_id'] }}">{{ card['status'] }}</span></h6>
         </div>
         <div class="card-body">
           {% if card['pizza_name'] %}
@@ -125,7 +125,7 @@
       <div class="card text-bg-danger mb-3" style="max-width: 18rem;">
         <div class="card-header">
           <h5>Order Number {{ card['order_id']}}</h5>
-          <h6>{{ card['status']}}</h6>
+          <h6><span id="status{{ card['order_id'] }}">{{ card['status'] }}</span></h6>
         </div>
         <div class="card-body">
           {% if card['pizza_name'] %}
@@ -147,4 +147,10 @@
     {% endfor %}
   </div>
 </div>
+<script src="/static/javascript.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        setInterval(fetch_status, 5000); // Update every 5 seconds (adjust the interval as needed)
+    });
+</script>
 {% endblock %}

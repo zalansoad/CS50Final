@@ -1,7 +1,7 @@
 import os
 
 from cs50 import SQL
-from flask import Flask, flash, redirect, render_template, request, session, abort
+from flask import Flask, flash, redirect, render_template, request, session, abort, jsonify
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
@@ -15,7 +15,6 @@ from flask_admin.menu import MenuLink
 
 # Configure application
 app = Flask(__name__)
-
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
@@ -86,17 +85,9 @@ class UserModel(ModelView):
         return session.get("user_type") == "admin"
 
 admin = Admin(app, index_view=SecuredHomeView(url='/admin'), template_mode='bootstrap3')
-
 admin.add_view(OrderModel(Order, dba.session))
 admin.add_view(UserModel(Users, dba.session))
 
-
-#@app.after_request
-#def after_request(response):
- #   response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-  #  response.headers["Expires"] = 0
-   # response.headers["Pragma"] = "no-cache"
-    #return response
 
 # Custom filter
 app.jinja_env.filters["usd"] = usd
@@ -127,9 +118,9 @@ def login():
         flashes = session.get("_flashes")
         session.clear()
         session["_flashes"] = flashes
-    else:
-        session.clear()
-     
+    #else:
+       # session.clear()
+
 
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
@@ -228,6 +219,12 @@ def myorder():
     """show active orders"""
     order = db.execute("SELECT order_id, pizza_name, drinks, price, status, street, city, zip FROM myorder WHERE user_id = ?", session["user_id"])
     return render_template("myorder.html", order=order)
+
+@app.route("/myorderdata")
+@login_required
+def myorderdata():
+    order = db.execute("SELECT order_id, pizza_name, drinks, price, status, street, city, zip FROM myorder WHERE user_id = ?", session["user_id"])
+    return jsonify(order)
 
 @app.route("/drinks")
 def drinks():
