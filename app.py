@@ -13,24 +13,23 @@ from flask_admin.contrib.sqla import ModelView
 from wtforms import SelectField
 from flask_admin.menu import MenuLink
 
-# Configure application
+# Configure application.
 app = Flask(__name__)
-# Configure session to use filesystem (instead of signed cookies)
+# Configure session to use filesystem (instead of signed cookies).
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
-
+# Configure QSLAlchemy for admin page use
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///pizza.db"
 dba = SQLAlchemy(app)
 
-
-
+# Defining status for display on admin index.
 def in_progress_orders():
     return Order.query.filter_by(status='In progress').count()
 def order_received_orders():
     return Order.query.filter_by(status='Order received').count()
 
-#reducing accessibility to admin page
+# Reducing accessibility to admin page.
 class SecuredHomeView(AdminIndexView):
     def is_accessible(self):
         return session.get("user_type") == "admin"
@@ -42,7 +41,7 @@ class SecuredHomeView(AdminIndexView):
         print(in_progress)                                                       
         return self.render('/admin/index.html', in_progress=in_progress, received=received)
 
-
+# Creating models for data to access through admin page.
 class Order(dba.Model):
     order_id = dba.Column(dba.Integer, primary_key=True)
     status = dba.Column(dba.String)
@@ -65,8 +64,7 @@ class Users(dba.Model):
     
     __tablename__ = 'users'
 
-
-
+# Creating a customer model view.
 class OrderModel(ModelView):
     column_display_pk = True
     column_filters = ("status", "order_id")
@@ -84,45 +82,41 @@ class UserModel(ModelView):
     def is_accessible(self):
         return session.get("user_type") == "admin"
 
+# Configuring admin page.
 admin = Admin(app, index_view=SecuredHomeView(url='/admin'), template_mode='bootstrap3')
 admin.add_view(OrderModel(Order, dba.session))
 admin.add_view(UserModel(Users, dba.session))
 
-
 # Custom filter
 app.jinja_env.filters["usd"] = usd
-
 
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///instance/pizza.db")
 print(db)
 
-
+# Error handlig for non-existing URLs.
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('404.html'), 404
-
 
 @app.route("/")
 def index():
     pizzas = db.execute("SELECT img, name, price, ingredients, route FROM pizzas")
     return render_template("index.html", pizzas=pizzas)
 
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """Log user in"""
 
-    # Forget any user_id
+    # Forget any user_id while preservin flashed message
     if session.get("_flashes"):
         flashes = session.get("_flashes")
         session.clear()
         session["_flashes"] = flashes
-    #else:
-       # session.clear()
+    else:
+       session.clear()
 
-
-    # User reached route via POST (as by submitting a form via POST)
+    # User reached route via POST
     if request.method == "POST":
         # Ensure username was submitted
         if not request.form.get("username"):
@@ -133,12 +127,9 @@ def login():
         elif not request.form.get("password"):
             flash("Please enter a password.")
             return redirect("/login")
-            
-
+        
         # Query database for username
-        rows = db.execute(
-            "SELECT * FROM users WHERE username = ?", request.form.get("username")
-        )
+        rows = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
 
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(
@@ -155,10 +146,11 @@ def login():
         flash("Logged in.")
         return redirect("/")
 
-    # User reached route via GET (as by clicking a link or via redirect)
+    # User reached route via GET
     else:
         return render_template("login.html")
 
+# Registering user.
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
@@ -213,6 +205,7 @@ def logout():
     flash("Logged out.")
     return redirect("/")
 
+# Listing user order.
 @app.route("/myorder")
 @login_required
 def myorder():
@@ -220,15 +213,18 @@ def myorder():
     order = db.execute("SELECT order_id, pizza_name, drinks, price, status, street, city, zip FROM myorder WHERE user_id = ?", session["user_id"])
     return render_template("myorder.html", order=order)
 
+# returning Json for AJAX request.
 @app.route("/myorderdata")
 @login_required
 def myorderdata():
     order = db.execute("SELECT order_id, pizza_name, drinks, price, status, street, city, zip FROM myorder WHERE user_id = ?", session["user_id"])
     return jsonify(order)
 
+# drink page
 @app.route("/drinks")
 def drinks():
     """list drinks"""
+    # creating tokens not to submit the same form two times if the user navigates back after submit.
     drinktoken = secrets.token_hex(16)
     session['drink_token'] = drinktoken
     drink = db.execute("SELECT * FROM drinks")
@@ -242,34 +238,33 @@ def cart():
     #Ensure cart exists
     if "cart" not in session:
         session["cart"] = {"allpizzaorder": [], "drinks": []}
-        #session["cart"] = {"allpizzaorder": [], "drinks": []}
-        #allpizzaorder = [[{'pid': pizzaid, 'extra':choseningredid}]]
-  
+    
+    #initializing values not to get error if variables are empty.
     chosenpizzaid = None
     chosendrinkid = None
     choseningredid = []
     
     if request.method == "POST":
-        #introducing tokens to preventcart caching the cart after using browser back button after the order is taken.
+        # Token is removed after the item is added to the cart once, in order to prevent caching POST request.
         if request.form.get('form_token') == session.pop('form_token', None):
             
             pizzaidsquery = db.execute("SELECT id FROM pizzas")
             extraidsquery = db.execute("SELECT id FROM ingredients")
             drinkidsquery = db.execute("SELECT id FROM drinks")
             
-            #checking if it is a pizza order
+            # Checking if it is a pizza order.
             if "pizzaid" in request.form:
                 
                 chosenpizzaid = int(request.form.get("pizzaid"))
                 choseningredid = [value for value in request.form.getlist('ingredid') if value]
 
-                #check if selected pizza is in the pizza list.
+                # Check if selected pizza is in the pizza list.
                 pizzaids = [row['id'] for row in pizzaidsquery]
                 if chosenpizzaid not in pizzaids:
                     flash("Do not manipulate pizza IDs!")
                     return redirect("/")
 
-                #check if selected ingred is in the ingred list.
+                # Check if selected ingred is in the ingred list.
                 extraids = [row['id'] for row in extraidsquery]
                 for eid in choseningredid:
                     if int(eid) not in extraids:
@@ -280,13 +275,13 @@ def cart():
                 if request.form.get('drink_token') == session.pop('drink_token', None):
                     chosendrinkid = int(request.form.get("drinkid"))
                     
-                    #check if selected drink is in the drink list.
+                    # Check if selected drink is in the drink list.
                     drinkids = [row['id'] for row in drinkidsquery]
                     if chosendrinkid not in drinkids:
                         flash("Do not manipulate drink IDs!")
                         return redirect("/")
                 
-            #if item id captured adding it to the session dict        
+            # If item id captured adding it to the session dict        
             if chosenpizzaid:
                 SelectedPizza = [{'pid': chosenpizzaid, 'extra':choseningredid}]
                 session["cart"]["allpizzaorder"].append(SelectedPizza)
@@ -294,7 +289,7 @@ def cart():
                 session["cart"]["drinks"].append(chosendrinkid)
             
 
-            #Removing pizza from cart session if removal request id captured
+            # Removing pizza from cart session if removal request id captured.
             if "removal_pizza_id" in request.form:
                 RemoveablePizzaID = int(request.form.get("removal_pizza_id"))
                 RemoveableExtra = [value for value in request.form.getlist('removal_extra_id') if value]
@@ -305,7 +300,7 @@ def cart():
                         session["cart"]["allpizzaorder"].remove(targetList)
                         break
             
-            #Removing drink from cart session if removal request id captured
+            # Removing drink from cart session if removal request id captured.
             if "removal_drink_id" in request.form:
                 RemoveableDrinkID = int(request.form.get("removal_drink_id"))
 
@@ -315,7 +310,7 @@ def cart():
                         break
 
             
-            #Retrieving data based on the ids stored in the session, and returning the data to the webpage 
+            # Retrieving data based on the ids stored in the session, and returning the string represenation of ids to the webpage. 
             result = process_cart()
             return result
         
@@ -325,6 +320,7 @@ def cart():
     result = process_cart()
     return result
 
+# Handling orders, gettin user details.
 @app.route("/order", methods=["POST"])
 @login_required
 def order():
@@ -364,20 +360,20 @@ def order():
     else:
         termsandcond = request.form.get("termsandcond")
 
-    #Gettin username
+    # Getting username.
     user_namedict = db.execute("SELECT username FROM users WHERE id = ?", session["user_id"])
     username = user_namedict[0]['username']
 
-    #Creating a string out of the ordered drinks
+    # Creating a string out of the ordered drinks.
     ordered_drinks = []
     for drink in session["cart"]["drinks"]:
         drinkdata = db.execute("SELECT name FROM drinks WHERE id = ?", drink)
         drinkname = drinkdata[0]["name"]
         ordered_drinks.append(drinkname)
-    #Result: Sprite, Coca-Cola, Iced Tea    
+    # Result e.g.: Sprite, Coca-Cola, Iced Tea    
     string_ordered_drinks = ', '.join(ordered_drinks)
     
-    #Creating string out of pizza names and extra ingredients.
+    # Creating string out of pizza names and extra ingredients.
     ordered_pizzas = []
     for plist in session["cart"]["allpizzaorder"]:
         ingredients = []
@@ -390,28 +386,29 @@ def order():
         string_ingreds = ', '.join(ingredients)
         pizzawithingred = pizzaname + " - " + string_ingreds
         ordered_pizzas.append(pizzawithingred)
-    #Result: Mushroom - Onions, Bell Peppers, Spinach; Hawaiian - Olives, Onions; Margherita - 
+    # Result e.g.: Mushroom - Onions, Bell Peppers, Spinach; Hawaiian - Olives, Onions; Margherita - 
     string_ordered_pizzas = '\n'.join(ordered_pizzas)
 
-    #Getting the total price
+    # Getting the total price for the order.
     totalprice = finalprice()
 
-    #Order time
+    # Order time.
     time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
-    #Adding order to the db
+    # Adding order to the db.
     db.execute("INSERT INTO myorder (user_id, user_name, pizza_name, drinks, price, time, first_name, last_name, street, city, zip, terms) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", session["user_id"], username, string_ordered_pizzas, string_ordered_drinks, totalprice, time, FirstName, LastName, street, city, zipcode, termsandcond)
     
-    #clear cart
+    # Clear cart.
     session["cart"]["allpizzaorder"] = []
     session["cart"]["drinks"] = []
     
     return redirect("/myorder", code=302)
 
+# Allowing user to cancel orders with status 'Order received'.
 @app.route("/cancelorder", methods=["POST"])
 @login_required
 def cancelorder():
-    #creating the list of 'Order received' list to make sure the user won't be able to cancel other orders
+    # Creating the list of 'Order received' list to make sure the user won't be able to cancel other orders.
     Orderdata = db.execute("SELECT order_id FROM myorder WHERE user_id = ? AND status = ?", session["user_id"], "Order received")
     ListOfOrders = [row["order_id"] for row in Orderdata]
     cancelledID = int(request.form.get("orderid"))
@@ -423,12 +420,12 @@ def cancelorder():
 
     return redirect("/myorder")
 
-#Creating a dynamic route to handle pizzas
+#Creating a dynamic route to handle pizzas.
 @app.route("/<pizza_route>")
 def pizza(pizza_route):
     pizzaroutes_data = db.execute("SELECT route FROM pizzas")
     pizzaroutes = [row["route"] for row in pizzaroutes_data]
-
+    # Tokens in order to prevent double posting after navigating back after an order.
     token = secrets.token_hex(16)
     session['form_token'] = token
     
