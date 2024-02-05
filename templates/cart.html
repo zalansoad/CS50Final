@@ -4,11 +4,16 @@
     Cart
 {% endblock %}
 
-
-
-
 {% block main %}
-
+<!--preventing caching the cart after submit by implementing reaload after back button is pressed-->
+<script>
+    window.addEventListener( "pageshow", function ( event ) {
+   var perfEntries = performance.getEntriesByType("navigation");
+   if (perfEntries[0].type === "back_forward") {
+   location.reload(true);
+   }
+   });
+</script>
 
 {% if pizza_order %}
 <div style="height:100%" class="container">

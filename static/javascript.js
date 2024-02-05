@@ -6,14 +6,14 @@ function fetch_status() {
                 var statusElement = document.getElementById("status" + order['order_id']);
                 statusElement.innerHTML = order['status'];
 
-                // Update the class of the parent card based on the status
+                // Update the colour of the card based on the status
                 var cardElement = statusElement.closest('.card');
                 cardElement.className = getCardClass(order['status']);
             });
         });
 }
 
-// Function to determine the card class based on the status
+// Function to determine the card colours based on the change
 function getCardClass(status) {
     switch (status) {
         case 'Order received':

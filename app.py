@@ -387,7 +387,7 @@ def order():
         pizzawithingred = pizzaname + " - " + string_ingreds
         ordered_pizzas.append(pizzawithingred)
     # Result e.g.: Mushroom - Onions, Bell Peppers, Spinach; Hawaiian - Olives, Onions; Margherita - 
-    string_ordered_pizzas = '\n'.join(ordered_pizzas)
+    string_ordered_pizzas = '; '.join(ordered_pizzas)
 
     # Getting the total price for the order.
     totalprice = finalprice()
